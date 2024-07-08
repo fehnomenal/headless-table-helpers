@@ -1,0 +1,2 @@
+var r=(e)=>{throw new Error(`This should never happen! Expected never, got ${JSON.stringify(e)}.`)};function l(e){if(e==="asc")return"desc";if(e==="desc")return"asc";return r(e)}var c=(e,t)=>{const n=s(e);return n&&t(n)?n:null},s=(e)=>{if(e.endsWith(":asc"))return{field:e.slice(0,-":asc".length),dir:"asc"};else if(e.endsWith(":desc"))return{field:e.slice(0,-":desc".length),dir:"desc"};return null},u=({field:e,dir:t})=>`${e}:${t}`;
+export{r as c,c as d,u as e,l as f};
