@@ -8,19 +8,19 @@ sorting and pagination both offset and cursor based.
 Choose the one for your package manager.
 
 ```sh
-npm install -D 'github:fehnomenal/headless-table-helpers#semver:1.0.0'
+npm install -D 'github:fehnomenal/headless-table-helpers#semver:1.0.1'
 ```
 
 ```sh
-yarn install -D 'github:fehnomenal/headless-table-helpers#semver:1.0.0'
+yarn install -D 'github:fehnomenal/headless-table-helpers#semver:1.0.1'
 ```
 
 ```sh
-pnpm install -D 'github:fehnomenal/headless-table-helpers#semver:1.0.0'
+pnpm install -D 'github:fehnomenal/headless-table-helpers#semver:1.0.1'
 ```
 
 ```sh
-bun add -D 'github:fehnomenal/headless-table-helpers#semver:1.0.0'
+bun add -D 'github:fehnomenal/headless-table-helpers#semver:1.0.1'
 ```
 
 ## Usage
