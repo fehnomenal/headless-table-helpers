@@ -1,0 +1,48 @@
+{
+  "name": "@fehnomenal/headless-table-helpers",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    "./client": {
+      "import": "./dist/client/index.js",
+      "types": "./dist/client/index.d.ts"
+    },
+    "./server": {
+      "import": "./dist/server/index.js",
+      "types": "./dist/server/index.d.ts"
+    },
+    "./common": {
+      "import": "./dist/common/index.js",
+      "types": "./dist/common/index.d.ts"
+    },
+    "./loader": {
+      "types": "./dist/loader/index.d.ts"
+    },
+    "./kysely": {
+      "import": "./dist/kysely/index.js",
+      "types": "./dist/kysely/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build:code": "bun build --target=node --outdir=dist -e svelte src/**/index.ts",
+    "build:declarations": "tsc",
+    "build": "rm -rf dist && bun run build:code && bun run build:declarations",
+    "format": "prettier -w src",
+    "changeset": "changeset",
+    "version": "changeset version"
+  },
+  "devDependencies": {
+    "@changesets/cli": "2.27.1",
+    "@types/bun": "latest",
+    "kysely": "0.27.3",
+    "prettier": "3.3.2",
+    "typescript": "5.5.3"
+  },
+  "peerDependencies": {
+    "kysely": "^0.27.3",
+    "svelte": "^4.0.0"
+  },
+  "files": [
+    "./dist"
+  ]
+}
