@@ -24,7 +24,7 @@
     }
   },
   "scripts": {
-    "build:code": "bun build --target=node --outdir=dist -e svelte src/**/index.ts",
+    "build:code": "bun build --target=node --minify --splitting --outdir=dist -e svelte src/**/index.ts",
     "build:declarations": "tsc",
     "build": "rm -rf dist && bun run build:code && bun run build:declarations",
     "format": "prettier -w src",
