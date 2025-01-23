@@ -67,7 +67,7 @@ const getRows = <DB, TB extends keyof DB & string, O>(
     return returnPromise;
   }
 
-  return assertNever(meta);
+  assertNever(meta);
 };
 
 const getCurrentOffset = async <DB, TB extends keyof DB>(
@@ -107,10 +107,10 @@ const getCurrentOffset = async <DB, TB extends keyof DB>(
       return offset - meta.rowsPerPage;
     }
 
-    return assertNever(meta.direction);
+    assertNever(meta.direction);
   }
 
-  return assertNever(meta);
+  assertNever(meta);
 };
 
 const filter =

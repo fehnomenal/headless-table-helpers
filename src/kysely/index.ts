@@ -40,5 +40,5 @@ export function createKyselyDataTableLoader<DB, TB extends keyof DB & string, O>
     return createKyselyCursorDataTableLoader(meta, baseQuery, sortTable, executeQuery);
   }
 
-  return assertNever(meta);
+  assertNever(meta);
 }

@@ -85,7 +85,7 @@ export function createEmptyDataTable<Column extends string, O>(
     });
   }
 
-  return assertNever(meta);
+  assertNever(meta);
 }
 
 export const updateDataTable = <Column extends string, O>(

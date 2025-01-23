@@ -44,5 +44,5 @@ export function invertSort(dir: 'asc' | 'desc') {
     return 'asc';
   }
 
-  return assertNever(dir);
+  assertNever(dir);
 }

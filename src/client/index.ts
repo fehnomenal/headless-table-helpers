@@ -33,7 +33,7 @@ export function clientDataTable<Column extends string, O extends Record<string, 
     return clientDataTableCursor(args);
   }
 
-  return assertNever(args);
+  assertNever(args);
 }
 
 const isOffsetArgs = <Column extends string, O extends Record<string, unknown>>(
