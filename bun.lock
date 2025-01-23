@@ -12,8 +12,11 @@
       },
       "peerDependencies": {
         "kysely": "^0.27.3",
-        "svelte": "^4.0.0",
+        "svelte": "^4 || ^5",
       },
+      "optionalPeers": [
+        "kysely",
+      ],
     },
   },
   "packages": {
