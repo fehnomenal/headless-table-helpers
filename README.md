@@ -145,7 +145,7 @@ The store provides all the properties you need to build the UI.
 For some UI frameworks (currently only Svelte 5) helper functions are provided to
 easily build an array of columns to display:
 
-```js
+```ts
 import { createDataTableHelper } from '@fehnomenal/headless-table-helpers/column-helpers/svelte';
 
 const h = createDataTableHelper(dataTable);
@@ -154,6 +154,18 @@ const h = createDataTableHelper(dataTable);
 The helper has functions for easily create columns that access single values
 (`h.accessor`), grouped values (`h.group`) or static values (`h.static`). All
 of these functions are correctly typed.
+
+Each column can have an object of meta information attached. You can strictly
+type this object with the following snippet inside a `*.d.ts` file that is
+included in your project.
+
+```ts
+declare module '@fehnomenal/headless-table-helpers/column-helpers/meta' {
+  interface ColumnMeta {
+    align?: 'c' | 'r';
+  }
+}
+```
 
 # Development and publishing
 
