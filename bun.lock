@@ -5,6 +5,7 @@
       "name": "@fehnomenal/headless-table-helpers",
       "devDependencies": {
         "@changesets/cli": "2.27.1",
+        "@fehnomenal/git-publisher": "github:fehnomenal/git-publisher#v1.0.3",
         "@types/bun": "latest",
         "kysely": "^0",
         "prettier": "3.3.2",
@@ -64,6 +65,8 @@
     "@changesets/types": ["@changesets/types@6.0.0", "", {}, "sha512-b1UkfNulgKoWfqyHtzKS5fOZYSJO+77adgL7DLRDr+/7jhChN+QcHnbjiQVOz/U+Ts3PGNySq7diAItzDgugfQ=="],
 
     "@changesets/write": ["@changesets/write@0.3.1", "", { "dependencies": { "@babel/runtime": "^7.20.1", "@changesets/types": "^6.0.0", "fs-extra": "^7.0.1", "human-id": "^1.0.2", "prettier": "^2.7.1" } }, "sha512-SyGtMXzH3qFqlHKcvFY2eX+6b0NGiFcNav8AFsYwy5l8hejOeoeTDemu5Yjmke2V5jpzY+pBvM0vCCQ3gdZpfw=="],
+
+    "@fehnomenal/git-publisher": ["@fehnomenal/git-publisher@github:fehnomenal/git-publisher#fa0362c", { "bin": { "publish-git": "./dist/index.js" } }, "fehnomenal-git-publisher-fa0362c"],
 
     "@jridgewell/gen-mapping": ["@jridgewell/gen-mapping@0.3.5", "", { "dependencies": { "@jridgewell/set-array": "^1.2.1", "@jridgewell/sourcemap-codec": "^1.4.10", "@jridgewell/trace-mapping": "^0.3.24" } }, "sha512-IzL8ZoEDIBRWEzlCcRhOaCupYyN5gdIK+Q6fbFdPDg6HqX6jpkItn7DFIpW9LQzXG6Df9sA7+OKnq0qlz/GaQg=="],
 

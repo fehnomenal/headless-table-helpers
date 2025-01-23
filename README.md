@@ -158,8 +158,7 @@ The store provides all the properties you need to build the UI.
 > bun version
 > git add ...
 > git commit -m "bump version to v..."
-> bun run build
-> npm2git c
+> bun run publish
 > git push
 > git push --tags
 ```

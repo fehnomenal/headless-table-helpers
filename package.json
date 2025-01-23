@@ -33,10 +33,12 @@
     "build": "rm -rf dist && bun run build:code && bun run build:declarations",
     "format": "prettier -w src",
     "changeset": "changeset",
-    "version": "changeset version"
+    "version": "changeset version",
+    "publish": "bun run build && publish-git"
   },
   "devDependencies": {
     "@changesets/cli": "2.27.1",
+    "@fehnomenal/git-publisher": "github:fehnomenal/git-publisher#v1.0.3",
     "@types/bun": "latest",
     "kysely": "^0",
     "prettier": "3.3.2",
