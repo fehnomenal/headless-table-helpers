@@ -140,6 +140,21 @@ page.
 The store provides all the properties you need to build the UI.
 // TBD
 
+### Column helpers
+
+For some UI frameworks (currently only Svelte 5) helper functions are provided to
+easily build an array of columns to display:
+
+```js
+import { createDataTableHelper } from '@fehnomenal/headless-table-helpers/column-helpers/svelte';
+
+const h = createDataTableHelper(dataTable);
+```
+
+The helper has functions for easily create columns that access single values
+(`h.accessor`), grouped values (`h.group`) or static values (`h.static`). All
+of these functions are correctly typed.
+
 # Development and publishing
 
 ## Dev
