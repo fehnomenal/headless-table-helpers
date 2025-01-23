@@ -2,4 +2,4 @@
 '@fehnomenal/headless-table-helpers': patch
 ---
 
-Also allow svelte v5
+Also allow Svelte 5

@@ -1,4 +1,4 @@
-import { writable, type StoresValues, type Writable } from 'svelte/store';
+import { writable, type Readable, type Writable } from 'svelte/store';
 import type { DataTableLoaderResult } from '../loader/result.js';
 import type { BaseDataTableMeta, DataTableMeta } from '../server/meta-common.js';
 import type { DataTableCursorPaginationMeta } from '../server/meta-cursor.js';
@@ -35,20 +35,22 @@ export type ClientDataTable<Column extends string, O> =
   | OffsetDataTable<Column, O>
   | CursorDataTable<Column, O>;
 
+type StoreValue<S> = S extends Readable<infer T> ? T : never;
+
 export function createEmptyDataTable<Column extends string, O>(
   meta: DataTableOffsetPaginationMeta<Column>,
   getParamsForSort: (column: Column) => URLSearchParams,
-): Writable<StoresValues<OffsetDataTable<Column, O>>>;
+): Writable<StoreValue<OffsetDataTable<Column, O>>>;
 
 export function createEmptyDataTable<Column extends string, O>(
   meta: DataTableCursorPaginationMeta<Column>,
   getParamsForSort: (column: Column) => URLSearchParams,
-): Writable<StoresValues<CursorDataTable<Column, O>>>;
+): Writable<StoreValue<CursorDataTable<Column, O>>>;
 
 export function createEmptyDataTable<Column extends string, O>(
   meta: DataTableMeta<Column>,
   getParamsForSort: (column: Column) => URLSearchParams,
-): Writable<StoresValues<ClientDataTable<Column, O>>> {
+): Writable<StoreValue<ClientDataTable<Column, O>>> {
   const base = {
     rowsPerPage: meta.rowsPerPage,
     rowsPerPageOptions: meta.rowsPerPageOptions,

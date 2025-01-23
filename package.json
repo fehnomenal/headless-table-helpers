@@ -7,24 +7,28 @@
       "import": "./dist/client/index.js",
       "types": "./dist/client/index.d.ts"
     },
-    "./server": {
-      "import": "./dist/server/index.js",
-      "types": "./dist/server/index.d.ts"
+    "./column-helpers/*": {
+      "import": "./dist/column-helpers/*.js",
+      "types": "./dist/column-helpers/*.d.ts"
     },
     "./common": {
       "import": "./dist/common/index.js",
       "types": "./dist/common/index.d.ts"
     },
-    "./loader": {
-      "types": "./dist/loader/index.d.ts"
-    },
     "./kysely": {
       "import": "./dist/kysely/index.js",
       "types": "./dist/kysely/index.d.ts"
+    },
+    "./loader": {
+      "types": "./dist/loader/index.d.ts"
+    },
+    "./server": {
+      "import": "./dist/server/index.js",
+      "types": "./dist/server/index.d.ts"
     }
   },
   "scripts": {
-    "build:code": "bun build --target=node --splitting --outdir=dist -e svelte src/**/index.ts",
+    "build:code": "bun build --target=node --splitting --outdir=dist -e svelte src/**/index.ts src/column-helpers/*.ts",
     "build:declarations": "tsc",
     "build": "rm -rf dist && bun run build:code && bun run build:declarations",
     "format": "prettier -w src",
@@ -34,13 +38,14 @@
   "devDependencies": {
     "@changesets/cli": "2.27.1",
     "@types/bun": "latest",
-    "kysely": "0.27.3",
+    "kysely": "^0",
     "prettier": "3.3.2",
+    "svelte": "^5",
     "typescript": "5.5.3"
   },
   "peerDependencies": {
-    "kysely": "^0.27.3",
-    "svelte": "^4 || ^5"
+    "kysely": "^0",
+    "svelte": "^5"
   },
   "peerDependenciesMeta": {
     "kysely": {
