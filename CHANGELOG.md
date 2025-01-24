@@ -1,5 +1,11 @@
 # @fehnomenal/headless-table-helpers
 
+## 2.1.0
+
+### Minor Changes
+
+- 8fcc1f6: Allow customizing the column meta
+
 ## 2.0.0
 
 ### Major Changes
