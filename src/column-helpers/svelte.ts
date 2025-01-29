@@ -27,55 +27,89 @@ interface CellConfig<Row extends Record<string, unknown>, Val extends Record<str
   Cell: Component<CellProps<Val, Row>>;
 }
 
-type AccessorHelper<Column extends keyof Row, Row extends Record<string, unknown>> = <Col extends Column>(
-  column: Col,
-  config?: Partial<ExclusifyUnion<OneProp<HeaderConfig>>> &
-    Partial<ExclusifyUnion<OneProp<CellConfig<Row, { value: Row[Col] }>>>> & { meta?: ColumnMeta },
-) => {
-  type: 'accessor';
-  column: Column;
-} & Partial<HeaderConfig> &
-  Partial<CellConfig<Row, { value: any }>> & { meta?: ColumnMeta };
-
-type GroupHelper<Column extends keyof Row, Row extends Record<string, unknown>> = <Columns extends Column[]>(
-  columns: Columns,
-  config: ExclusifyUnion<OneProp<HeaderConfig>> &
-    ExclusifyUnion<OneProp<CellConfig<Row, { values: Pick<Row, Columns[number]> }>>> & { meta?: ColumnMeta },
-) => {
-  type: 'group';
-  columns: Columns;
-} & ExclusifyUnion<OneProp<HeaderConfig>> &
-  ExclusifyUnion<OneProp<CellConfig<Row, { values: any }>>> & { meta?: ColumnMeta };
-
-type StaticHelper<Row extends Record<string, unknown>> = (
-  config: ExclusifyUnion<OneProp<HeaderConfig>> &
-    ExclusifyUnion<OneProp<CellConfig<Row, never>>> & { meta?: ColumnMeta },
-) => {
-  type: 'static';
-} & ExclusifyUnion<OneProp<HeaderConfig>> &
-  ExclusifyUnion<OneProp<CellConfig<Row, never>>> & { meta?: ColumnMeta };
-
 export const createDataTableHelper = <Column extends keyof Row & string, Row extends Record<string, unknown>>(
   _dataTable: ClientDataTable<string, Row>,
-): {
-  accessor: AccessorHelper<Column, Row>;
-  group: GroupHelper<Column, Row>;
-  static: StaticHelper<Row>;
-} => ({
-  accessor: (column, config) => ({
-    type: 'accessor',
-    column,
-    ...config,
-  }),
+) => ({
+  accessor: createAccessorHelper<Row, Column>(),
 
-  group: (columns, config) => ({
-    type: 'group',
-    columns,
-    ...config,
-  }),
+  group: createGroupHelper<Row, Column>(),
 
-  static: (config) => ({
-    type: 'static',
-    ...config,
-  }),
+  static: createStaticHelper<Row>(),
 });
+
+function createAccessorHelper<Row extends Record<string, unknown>, Column extends keyof Row>() {
+  function accessorHelper<Col extends Column>(
+    column: Col,
+    config?: Partial<ExclusifyUnion<OneProp<HeaderConfig>>> &
+      Partial<ExclusifyUnion<OneProp<CellConfig<Row, { value: Row[Col] }>>>> & { meta?: ColumnMeta },
+  ): {
+    type: 'accessor';
+    value: (row: Row) => Row[Col];
+  } & Partial<HeaderConfig> &
+    Partial<CellConfig<Row, { value: any }>> & { meta?: ColumnMeta };
+
+  function accessorHelper<T>(
+    fn: (row: Row) => T,
+    config: ExclusifyUnion<OneProp<HeaderConfig>> &
+      ExclusifyUnion<OneProp<CellConfig<Row, { value: T }>>> & { meta?: ColumnMeta },
+  ): {
+    type: 'accessor';
+    value: (row: Row) => T;
+  } & Partial<HeaderConfig> &
+    Partial<CellConfig<Row, { value: any }>> & { meta?: ColumnMeta };
+
+  function accessorHelper(
+    columnOrFn: (Column & string) | ((row: Row) => any),
+    config?: Partial<ExclusifyUnion<OneProp<HeaderConfig>>> &
+      Partial<ExclusifyUnion<OneProp<CellConfig<Row, { value: any }>>>> & { meta?: ColumnMeta },
+  ): {
+    type: 'accessor';
+    value: (row: Row) => any;
+  } & Partial<HeaderConfig> &
+    Partial<CellConfig<Row, { value: any }>> & { meta?: ColumnMeta } {
+    const value = typeof columnOrFn === 'string' ? (row: Row) => row[columnOrFn] : columnOrFn;
+
+    return {
+      type: 'accessor',
+      value,
+      ...config,
+    };
+  }
+
+  return accessorHelper;
+}
+
+function createGroupHelper<Row extends Record<string, unknown>, Column extends keyof Row>() {
+  return function groupHelper<Columns extends Column[]>(
+    columns: Columns,
+    config: ExclusifyUnion<OneProp<HeaderConfig>> &
+      ExclusifyUnion<OneProp<CellConfig<Row, { value: Pick<Row, Columns[number]> }>>> & {
+        meta?: ColumnMeta;
+      },
+  ): {
+    type: 'accessor';
+    values: (row: Row) => Pick<Row, Column>;
+  } & ExclusifyUnion<OneProp<HeaderConfig>> &
+    ExclusifyUnion<OneProp<CellConfig<Row, { value: any }>>> & { meta?: ColumnMeta } {
+    return {
+      type: 'accessor',
+      values: (row: Row) => Object.fromEntries(columns.map((col) => [col, row[col]])) as Pick<Row, Column>,
+      ...config,
+    };
+  };
+}
+
+function createStaticHelper<Row extends Record<string, unknown>>() {
+  return function staticHelper(
+    config: ExclusifyUnion<OneProp<HeaderConfig>> &
+      ExclusifyUnion<OneProp<CellConfig<Row, never>>> & { meta?: ColumnMeta },
+  ): {
+    type: 'static';
+  } & ExclusifyUnion<OneProp<HeaderConfig>> &
+    ExclusifyUnion<OneProp<CellConfig<Row, never>>> & { meta?: ColumnMeta } {
+    return {
+      type: 'static',
+      ...config,
+    };
+  };
+}
