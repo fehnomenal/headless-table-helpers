@@ -1,5 +1,11 @@
 # @fehnomenal/headless-table-helpers
 
+## 3.0.0
+
+### Major Changes
+
+- adf6cea: Allow transforming values for cells
+
 ## 2.1.0
 
 ### Minor Changes
