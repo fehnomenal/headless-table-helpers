@@ -45,8 +45,7 @@ function createAccessorHelper<Row extends Record<string, unknown>, Column extend
   ): {
     type: 'accessor';
     value: (row: Row) => Row[Col];
-  } & Partial<HeaderConfig> &
-    Partial<CellConfig<Row, { value: any }>> & { meta?: ColumnMeta };
+  } & NonNullable<typeof config>;
 
   function accessorHelper<T>(
     fn: (row: Row) => T,
@@ -55,8 +54,7 @@ function createAccessorHelper<Row extends Record<string, unknown>, Column extend
   ): {
     type: 'accessor';
     value: (row: Row) => T;
-  } & Partial<HeaderConfig> &
-    Partial<CellConfig<Row, { value: any }>> & { meta?: ColumnMeta };
+  } & typeof config;
 
   function accessorHelper(
     columnOrFn: (Column & string) | ((row: Row) => any),
@@ -65,8 +63,7 @@ function createAccessorHelper<Row extends Record<string, unknown>, Column extend
   ): {
     type: 'accessor';
     value: (row: Row) => any;
-  } & Partial<HeaderConfig> &
-    Partial<CellConfig<Row, { value: any }>> & { meta?: ColumnMeta } {
+  } & typeof config {
     const value = typeof columnOrFn === 'string' ? (row: Row) => row[columnOrFn] : columnOrFn;
 
     return {
@@ -88,12 +85,15 @@ function createGroupHelper<Row extends Record<string, unknown>, Column extends k
       },
   ): {
     type: 'accessor';
-    values: (row: Row) => Pick<Row, Column>;
-  } & ExclusifyUnion<OneProp<HeaderConfig>> &
-    ExclusifyUnion<OneProp<CellConfig<Row, { value: any }>>> & { meta?: ColumnMeta } {
+    values: (row: Row) => Pick<Row, Columns[number]>;
+  } & typeof config {
     return {
       type: 'accessor',
-      values: (row: Row) => Object.fromEntries(columns.map((col) => [col, row[col]])) as Pick<Row, Column>,
+      values: (row: Row) =>
+        Object.fromEntries(columns.map((col: Columns[number]) => [col, row[col]])) as Pick<
+          Row,
+          Columns[number]
+        >,
       ...config,
     };
   };
@@ -105,8 +105,7 @@ function createStaticHelper<Row extends Record<string, unknown>>() {
       ExclusifyUnion<OneProp<CellConfig<Row, never>>> & { meta?: ColumnMeta },
   ): {
     type: 'static';
-  } & ExclusifyUnion<OneProp<HeaderConfig>> &
-    ExclusifyUnion<OneProp<CellConfig<Row, never>>> & { meta?: ColumnMeta } {
+  } & typeof config {
     return {
       type: 'static',
       ...config,
