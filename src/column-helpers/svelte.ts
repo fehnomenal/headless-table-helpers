@@ -44,6 +44,7 @@ function createAccessorHelper<Row extends Record<string, unknown>, Column extend
       Partial<ExclusifyUnion<OneProp<CellConfig<Row, { value: Row[Col] }>>>> & { meta?: ColumnMeta },
   ): {
     type: 'accessor';
+    column: Col;
     value: (row: Row) => Row[Col];
   } & NonNullable<typeof config>;
 
@@ -53,6 +54,7 @@ function createAccessorHelper<Row extends Record<string, unknown>, Column extend
       ExclusifyUnion<OneProp<CellConfig<Row, { value: T }>>> & { meta?: ColumnMeta },
   ): {
     type: 'accessor';
+    column: never;
     value: (row: Row) => T;
   } & typeof config;
 
@@ -62,12 +64,14 @@ function createAccessorHelper<Row extends Record<string, unknown>, Column extend
       Partial<ExclusifyUnion<OneProp<CellConfig<Row, { value: any }>>>> & { meta?: ColumnMeta },
   ): {
     type: 'accessor';
+    column: any;
     value: (row: Row) => any;
   } & typeof config {
     const value = typeof columnOrFn === 'string' ? (row: Row) => row[columnOrFn] : columnOrFn;
 
     return {
       type: 'accessor',
+      column: typeof columnOrFn === 'string' ? columnOrFn : undefined,
       value,
       ...config,
     };
@@ -85,10 +89,12 @@ function createGroupHelper<Row extends Record<string, unknown>, Column extends k
       },
   ): {
     type: 'accessor';
+    columns: Columns;
     values: (row: Row) => Pick<Row, Columns[number]>;
   } & typeof config {
     return {
       type: 'accessor',
+      columns,
       values: (row: Row) =>
         Object.fromEntries(columns.map((col: Columns[number]) => [col, row[col]])) as Pick<
           Row,
