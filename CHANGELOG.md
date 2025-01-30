@@ -1,5 +1,11 @@
 # @fehnomenal/headless-table-helpers
 
+## 3.1.1
+
+### Patch Changes
+
+- 7e28f2c: Make column config types more explicit
+
 ## 3.1.0
 
 ### Minor Changes
