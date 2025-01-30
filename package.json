@@ -33,8 +33,7 @@
     "build": "rm -rf dist && bun run build:code && bun run build:declarations",
     "format": "prettier -w src",
     "changeset": "changeset",
-    "version": "changeset version",
-    "publish": "bun run build && publish-git"
+    "version": "changeset version"
   },
   "devDependencies": {
     "@changesets/cli": "2.27.1",
