@@ -38,41 +38,32 @@ export const createDataTableHelper = <Column extends keyof Row & string, Row ext
 });
 
 function createAccessorHelper<Row extends Record<string, unknown>, Column extends keyof Row>() {
+  type Header = ExclusifyUnion<OneProp<HeaderConfig>>;
+  type Cell<Value> = ExclusifyUnion<OneProp<CellConfig<Row, { value: Value }>>>;
+
+  type Return = {
+    type: 'accessor';
+    column?: Column;
+    value: (row: Row) => any;
+    meta?: ColumnMeta;
+  } & Partial<HeaderConfig> &
+    Partial<CellConfig<Row, { value: any }>>;
+
   function accessorHelper<Col extends Column>(
     column: Col,
-    config?: Partial<ExclusifyUnion<OneProp<HeaderConfig>>> &
-      Partial<ExclusifyUnion<OneProp<CellConfig<Row, { value: Row[Col] }>>>> & { meta?: ColumnMeta },
-  ): {
-    type: 'accessor';
-    column: Col;
-    value: (row: Row) => Row[Col];
-  } & NonNullable<typeof config>;
+    config?: Partial<Header> & Partial<Cell<Row[Col]>> & { meta?: ColumnMeta },
+  ): Return;
 
-  function accessorHelper<T>(
-    fn: (row: Row) => T,
-    config: ExclusifyUnion<OneProp<HeaderConfig>> &
-      ExclusifyUnion<OneProp<CellConfig<Row, { value: T }>>> & { meta?: ColumnMeta },
-  ): {
-    type: 'accessor';
-    column: never;
-    value: (row: Row) => T;
-  } & typeof config;
+  function accessorHelper<T>(fn: (row: Row) => T, config: Header & Cell<T> & { meta?: ColumnMeta }): Return;
 
   function accessorHelper(
     columnOrFn: (Column & string) | ((row: Row) => any),
-    config?: Partial<ExclusifyUnion<OneProp<HeaderConfig>>> &
-      Partial<ExclusifyUnion<OneProp<CellConfig<Row, { value: any }>>>> & { meta?: ColumnMeta },
-  ): {
-    type: 'accessor';
-    column: any;
-    value: (row: Row) => any;
-  } & typeof config {
-    const value = typeof columnOrFn === 'string' ? (row: Row) => row[columnOrFn] : columnOrFn;
-
+    config?: Partial<Header> & Partial<Cell<any>> & { meta?: ColumnMeta },
+  ): Return {
     return {
       type: 'accessor',
       column: typeof columnOrFn === 'string' ? columnOrFn : undefined,
-      value,
+      value: typeof columnOrFn === 'string' ? (row) => row[columnOrFn] : columnOrFn,
       ...config,
     };
   }
@@ -81,21 +72,26 @@ function createAccessorHelper<Row extends Record<string, unknown>, Column extend
 }
 
 function createGroupHelper<Row extends Record<string, unknown>, Column extends keyof Row>() {
+  type Header = ExclusifyUnion<OneProp<HeaderConfig>>;
+  type Cell = ExclusifyUnion<OneProp<CellConfig<Row, { value: Value }>>>;
+  type Value = Pick<Row, Column>;
+
+  type Return = {
+    type: 'group';
+    columns: Column[];
+    value: (row: Row) => any;
+    meta?: ColumnMeta;
+  } & Header &
+    Cell;
+
   return function groupHelper<Columns extends Column[]>(
     columns: Columns,
-    config: ExclusifyUnion<OneProp<HeaderConfig>> &
-      ExclusifyUnion<OneProp<CellConfig<Row, { value: Pick<Row, Columns[number]> }>>> & {
-        meta?: ColumnMeta;
-      },
-  ): {
-    type: 'accessor';
-    columns: Columns;
-    values: (row: Row) => Pick<Row, Columns[number]>;
-  } & typeof config {
+    config: Header & Cell & { meta?: ColumnMeta },
+  ): Return {
     return {
-      type: 'accessor',
+      type: 'group',
       columns,
-      values: (row: Row) =>
+      value: (row) =>
         Object.fromEntries(columns.map((col: Columns[number]) => [col, row[col]])) as Pick<
           Row,
           Columns[number]
@@ -106,12 +102,16 @@ function createGroupHelper<Row extends Record<string, unknown>, Column extends k
 }
 
 function createStaticHelper<Row extends Record<string, unknown>>() {
-  return function staticHelper(
-    config: ExclusifyUnion<OneProp<HeaderConfig>> &
-      ExclusifyUnion<OneProp<CellConfig<Row, never>>> & { meta?: ColumnMeta },
-  ): {
+  type Header = ExclusifyUnion<OneProp<HeaderConfig>>;
+  type Cell = ExclusifyUnion<OneProp<CellConfig<Row, never>>>;
+
+  type Return = {
     type: 'static';
-  } & typeof config {
+    meta?: ColumnMeta;
+  } & Header &
+    Cell;
+
+  return function staticHelper(config: Header & Cell & { meta?: ColumnMeta }): Return {
     return {
       type: 'static',
       ...config,
