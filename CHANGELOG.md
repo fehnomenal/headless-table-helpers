@@ -1,5 +1,11 @@
 # @fehnomenal/headless-table-helpers
 
+## 3.1.0
+
+### Minor Changes
+
+- ef8656b: Add selected columns to config
+
 ## 3.0.0
 
 ### Major Changes
