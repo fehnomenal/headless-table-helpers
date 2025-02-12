@@ -8,19 +8,19 @@ sorting and pagination both offset and cursor based.
 Choose the one for your package manager.
 
 ```sh
-npm install -D 'github:fehnomenal/headless-table-helpers#semver:v3.1.1'
+npm install -D @fehnomenal/headless-table-helpers
 ```
 
 ```sh
-yarn install -D 'github:fehnomenal/headless-table-helpers#semver:v3.1.1'
+yarn install -D @fehnomenal/headless-table-helpers
 ```
 
 ```sh
-pnpm install -D 'github:fehnomenal/headless-table-helpers#semver:v3.1.1'
+pnpm install -D @fehnomenal/headless-table-helpers
 ```
 
 ```sh
-bun add -D 'github:fehnomenal/headless-table-helpers#semver:v3.1.1'
+bun add -D @fehnomenal/headless-table-helpers
 ```
 
 ## Usage
@@ -173,19 +173,15 @@ declare module '@fehnomenal/headless-table-helpers/column-helpers/meta' {
 
 ```sh
 > bun i
-> # work work work
+> git switch -c ...
+> # work work work and commit stuff
+> # add a changeset if it is an user-visible change
 > bun changeset
-> git add ...
-> git commit
+> git add .changeset
+> git commit -m "changeset"
+> git push
 ```
 
 ## Publish
 
-```sh
-> bun version
-> git add ...
-> git commit -m "bump version to v..."
-> bun run publish
-> git push
-> git push --tags
-```
+Publishing is done through the changesets bot and action.
