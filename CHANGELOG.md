@@ -1,5 +1,12 @@
 # @fehnomenal/headless-table-helpers
 
+## 3.1.2
+
+### Patch Changes
+
+- Automate releasing _[`#2`](https://github.com/fehnomenal/headless-table-helpers/pull/2) [`b89ec19`](https://github.com/fehnomenal/headless-table-helpers/commit/b89ec199b6ca53aaf9aa58ccf6423df46630e390) [@fehnomenal](https://github.com/fehnomenal)_
+- Allow release workflow in this repo _[`#3`](https://github.com/fehnomenal/headless-table-helpers/pull/3) [`d550b16`](https://github.com/fehnomenal/headless-table-helpers/commit/d550b165d13f19e4158e4e33012cd3b1ba50e23b) [@fehnomenal](https://github.com/fehnomenal)_
+
 ## 3.1.1
 
 ### Patch Changes
