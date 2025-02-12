@@ -35,7 +35,7 @@
     "format": "prettier -w src",
     "changeset": "changeset",
     "version": "changeset version",
-    "publish": "bun run build && publish-git"
+    "release": "bun run build && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "2.27.1",
