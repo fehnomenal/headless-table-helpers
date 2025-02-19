@@ -134,8 +134,8 @@ const getLastPageCursor = async <DB, TB extends keyof DB & string>(
     query = query.orderBy(`${sortTable}.${sort.field}`, sortDir);
   }
 
+  // Only add the id column to the ordering if not already sorted by this column.
   if (sort?.field !== meta.idColumn) {
-    // MsSql does not like duplicated order by columns...
     query = query.orderBy(`${sortTable}.${meta.idColumn}`, sortDir);
   }
 
