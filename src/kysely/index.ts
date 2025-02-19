@@ -12,6 +12,9 @@ import type { OrderBy } from './loader-common.js';
 import { createKyselyCursorDataTableLoader } from './loader-cursor.js';
 import { createKyselyOffsetDataTableLoader } from './loader-offset.js';
 
+export { createKyselyCursorDataTableLoader } from './loader-cursor.js';
+export { createKyselyOffsetDataTableLoader } from './loader-offset.js';
+
 export function createKyselyDataTableLoader<DB, TB extends keyof DB & string, O>(
   meta: DataTableOffsetPaginationMeta<AnyColumn<DB, TB>>,
   baseQuery: SelectQueryBuilder<DB, TB, {}>,
