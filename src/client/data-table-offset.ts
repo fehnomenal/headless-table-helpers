@@ -1,13 +1,14 @@
-import { readonly, type Readable } from 'svelte/store';
+import { readonly, writable, type Readable } from 'svelte/store';
 import { buildSortString } from '../common/sort.js';
 import type { OffsetDataTableLoaderResult } from '../loader/result.js';
 import type { DataTableOffsetPaginationMeta } from '../server/meta-offset.js';
 import { calcOffset } from '../utils/calculations.js';
 import {
-  createEmptyDataTable,
+  getBaseDataTableData,
   updateDataTable,
   type BaseDataTable,
   type DataTableClientConfig,
+  type OffsetDataTableStore,
 } from './data-table-common.js';
 import {
   convertAdditionalParameters,
@@ -39,10 +40,11 @@ export const clientDataTableOffset = <Column extends string, O extends Record<st
 ]: ClientOffsetDataTableArgs<Column, O>): ClientOffsetDataTable<Column, O> => {
   const additionalParamsHolder: { params: [string, string][] } = { params: [] };
 
-  const dataTable = createEmptyDataTable<Column, O>(
-    meta,
-    mkGetParamsForSort(meta, meta.sort[0], additionalParamsHolder),
-  );
+  const dataTable: OffsetDataTableStore<Column, O> = writable({
+    ...getBaseDataTableData(meta, mkGetParamsForSort(meta, meta.sort[0], additionalParamsHolder)),
+    paramNames: meta.paramNames,
+    sort: meta.sort,
+  });
 
   const update: UpdateDataTable<Column, O> = (meta, loaderResult, config) => {
     additionalParamsHolder.params = convertAdditionalParameters(config);

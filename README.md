@@ -72,6 +72,10 @@ querybuilder:
 ```ts
 import { createKyselyDataTableLoader } from '@fehnomenal/headless-table-helpers/kysely';
 
+// You can also import `createKyselyCursorDataTableLoader` or
+// `createKyselyOffsetDataTableLoader` to benefit from better tree-shaking.
+// The base function will delegate to these depending on the type of `meta`.
+
 const result = createKyselyDataTableLoader(
   meta,
   db.selectFrom('persons').where('name', 'like', `%${params.search}%`),
@@ -112,6 +116,10 @@ function. The third parameter `config` is optional.
 
 ```ts
 import { clientDataTable } from '@fehnomenal/headless-table-helpers/client';
+
+// You can also import `clientDataTableCursor` or `clientDataTableOffset` to
+// benefit from better tree-shaking. The base function will delegate to these
+// depending on the type of `meta`.
 
 const dataTable = clientDataTable(meta, result, {
   // You can pass additional data that is used to create pagination links.

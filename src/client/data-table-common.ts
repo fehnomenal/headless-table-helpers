@@ -1,9 +1,6 @@
-import { writable, type Readable, type Writable } from 'svelte/store';
+import type { Readable, Writable } from 'svelte/store';
 import type { DataTableLoaderResult } from '../loader/result.js';
 import type { BaseDataTableMeta, DataTableMeta } from '../server/meta-common.js';
-import type { DataTableCursorPaginationMeta } from '../server/meta-cursor.js';
-import type { DataTableOffsetPaginationMeta } from '../server/meta-offset.js';
-import { assertNever } from '../utils/assert-never.js';
 import type { CursorDataTable } from './data-table-cursor.js';
 import type { OffsetDataTable } from './data-table-offset.js';
 
@@ -37,21 +34,11 @@ export type ClientDataTable<Column extends string, O> =
 
 type StoreValue<S> = S extends Readable<infer T> ? T : never;
 
-export function createEmptyDataTable<Column extends string, O>(
-  meta: DataTableOffsetPaginationMeta<Column>,
+export const getBaseDataTableData = <Column extends string, O>(
+  meta: BaseDataTableMeta<Column>,
   getParamsForSort: (column: Column) => URLSearchParams,
-): Writable<StoreValue<OffsetDataTable<Column, O>>>;
-
-export function createEmptyDataTable<Column extends string, O>(
-  meta: DataTableCursorPaginationMeta<Column>,
-  getParamsForSort: (column: Column) => URLSearchParams,
-): Writable<StoreValue<CursorDataTable<Column, O>>>;
-
-export function createEmptyDataTable<Column extends string, O>(
-  meta: DataTableMeta<Column>,
-  getParamsForSort: (column: Column) => URLSearchParams,
-): Writable<StoreValue<ClientDataTable<Column, O>>> {
-  const base = {
+) =>
+  ({
     rowsPerPage: meta.rowsPerPage,
     rowsPerPageOptions: meta.rowsPerPageOptions,
     sortable: meta.sortable,
@@ -69,26 +56,10 @@ export function createEmptyDataTable<Column extends string, O>(
     paramsForPreviousPage: 'loading',
     paramsForNextPage: 'loading',
     paramsForLastPage: 'loading',
-  } satisfies BaseDataTable<Column, O>;
+  }) satisfies BaseDataTable<Column, O>;
 
-  if (meta.type === 'offset') {
-    return writable({
-      ...base,
-      paramNames: meta.paramNames,
-      sort: meta.sort,
-    });
-  }
-
-  if (meta.type === 'cursor') {
-    return writable({
-      ...base,
-      paramNames: meta.paramNames,
-      sort: meta.sort,
-    });
-  }
-
-  assertNever(meta);
-}
+export type OffsetDataTableStore<Column extends string, O> = Writable<StoreValue<OffsetDataTable<Column, O>>>;
+export type CursorDataTableStore<Column extends string, O> = Writable<StoreValue<CursorDataTable<Column, O>>>;
 
 export const updateDataTable = <Column extends string, O>(
   dataTable: Writable<BaseDataTable<Column, O>>,

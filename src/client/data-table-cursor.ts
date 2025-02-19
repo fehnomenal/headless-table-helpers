@@ -1,11 +1,12 @@
-import { readonly, type Readable } from 'svelte/store';
+import { readonly, writable, type Readable } from 'svelte/store';
 import { buildSortString } from '../common/sort.js';
 import type { CursorDataTableLoaderResult } from '../loader/result.js';
 import type { DataTableCursorPaginationMeta } from '../server/meta-cursor.js';
 import {
-  createEmptyDataTable,
+  getBaseDataTableData,
   updateDataTable,
   type BaseDataTable,
+  type CursorDataTableStore,
   type DataTableClientConfig,
 } from './data-table-common.js';
 import {
@@ -38,10 +39,11 @@ export const clientDataTableCursor = <Column extends string, O extends Record<st
 ]: ClientCursorDataTableArgs<Column, O>): ClientCursorDataTable<Column, O> => {
   const additionalParamsHolder: { params: [string, string][] } = { params: [] };
 
-  const dataTable = createEmptyDataTable<Column, O>(
-    meta,
-    mkGetParamsForSort(meta, meta.sort, additionalParamsHolder),
-  );
+  const dataTable: CursorDataTableStore<Column, O> = writable({
+    ...getBaseDataTableData(meta, mkGetParamsForSort(meta, meta.sort, additionalParamsHolder)),
+    paramNames: meta.paramNames,
+    sort: meta.sort,
+  });
 
   const update: UpdateDataTable<Column, O> = (meta, loaderResult, config) => {
     additionalParamsHolder.params = convertAdditionalParameters(config);
