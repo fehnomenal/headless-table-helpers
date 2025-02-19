@@ -11,8 +11,8 @@ import {
 } from './data-table-offset.js';
 
 export type { ClientDataTable, DataTableClientConfig } from './data-table-common.js';
-export type { CursorDataTable } from './data-table-cursor.js';
-export type { OffsetDataTable } from './data-table-offset.js';
+export { clientDataTableCursor, type CursorDataTable } from './data-table-cursor.js';
+export { clientDataTableOffset, type OffsetDataTable } from './data-table-offset.js';
 
 export function clientDataTable<Column extends string, O extends Record<string, unknown>>(
   ...args: ClientOffsetDataTableArgs<Column, O>
