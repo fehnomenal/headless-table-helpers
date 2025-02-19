@@ -1,5 +1,11 @@
 # @fehnomenal/headless-table-helpers
 
+## 3.2.0
+
+### Minor Changes
+
+- Also export concrete implementations for better tree-shaking _[`#5`](https://github.com/fehnomenal/headless-table-helpers/pull/5) [`7b61c25`](https://github.com/fehnomenal/headless-table-helpers/commit/7b61c2522fb8eddeb130a70e88e87c7de0727598) [@fehnomenal](https://github.com/fehnomenal)_
+
 ## 3.1.2
 
 ### Patch Changes
