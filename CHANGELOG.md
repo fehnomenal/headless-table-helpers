@@ -1,5 +1,15 @@
 # @fehnomenal/headless-table-helpers
 
+## 3.2.0
+
+### Minor Changes
+
+- Also export concrete implementations for better tree-shaking _[`#5`](https://github.com/fehnomenal/headless-table-helpers/pull/5) [`7b61c25`](https://github.com/fehnomenal/headless-table-helpers/commit/7b61c2522fb8eddeb130a70e88e87c7de0727598) [@fehnomenal](https://github.com/fehnomenal)_
+
+### Patch Changes
+
+- Prevent modifying the default rows per page options _[`#8`](https://github.com/fehnomenal/headless-table-helpers/pull/8) [`20f54a3`](https://github.com/fehnomenal/headless-table-helpers/commit/20f54a3c4512b6b810a2610cb979383b61c66466) [@fehnomenal](https://github.com/fehnomenal)_
+
 ## 3.1.2
 
 ### Patch Changes
