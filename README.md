@@ -175,9 +175,9 @@ declare module '@fehnomenal/headless-table-helpers/column-helpers/meta' {
 }
 ```
 
-# Development and publishing
+## Development and publishing
 
-## Dev
+### Dev
 
 ```sh
 > bun i
@@ -190,6 +190,6 @@ declare module '@fehnomenal/headless-table-helpers/column-helpers/meta' {
 > git push
 ```
 
-## Publish
+### Publish
 
 Publishing is done through the changesets bot and action.
