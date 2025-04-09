@@ -30,12 +30,12 @@ export const getBaseDataTableMeta = <
   paramNames: Required<ParamNames>,
   config: DataTableConfig<Column> | undefined,
 ): BaseDataTableMeta<Column> => {
-  const rowsPerPageOptions = config?.rowsPerPageOptions ?? DEFAULT_ROWS_PER_PAGE_OPTIONS;
+  const rowsPerPageOptions = config?.rowsPerPageOptions ?? [...DEFAULT_ROWS_PER_PAGE_OPTIONS];
 
   const rowsPerPage = Math.min(
     getIntParam(
       params.get(paramNames.rowsPerPage),
-      config?.defaultRowsPerPage ?? rowsPerPageOptions[0] ?? DEFAULT_ROWS_PER_PAGE,
+      config?.defaultRowsPerPage ?? Math.min(...rowsPerPageOptions) ?? DEFAULT_ROWS_PER_PAGE,
     ),
     MAX_ROWS_PER_PAGE,
   );
