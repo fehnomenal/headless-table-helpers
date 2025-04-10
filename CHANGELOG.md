@@ -1,5 +1,11 @@
 # @fehnomenal/headless-table-helpers
 
+## 3.3.0
+
+### Minor Changes
+
+- Allow setting a default sort for cursor pagination _[`#9`](https://github.com/fehnomenal/headless-table-helpers/pull/9) [`db113a4`](https://github.com/fehnomenal/headless-table-helpers/commit/db113a4c6e3f9ffd6b8dea25ac86862781f1974b) [@fehnomenal](https://github.com/fehnomenal)_
+
 ## 3.2.0
 
 ### Minor Changes
