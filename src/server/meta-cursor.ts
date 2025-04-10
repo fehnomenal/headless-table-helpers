@@ -29,7 +29,8 @@ export function getDataTableCursorPaginationMeta<Column extends string>(
 
   const idCursor = params.get(paramNames.cursorId) ?? undefined;
 
-  const sort = getSort(params.get(paramNames.sort), config) ?? { field: config.idColumn, dir: 'asc' };
+  const sort = getSort(params.get(paramNames.sort), config) ??
+    config.defaultSort ?? { field: config.idColumn, dir: 'asc' };
   const sortCursor = params.get(paramNames.cursorSort) ?? undefined;
 
   const direction = params.get(paramNames.direction);
@@ -49,4 +50,5 @@ export function getDataTableCursorPaginationMeta<Column extends string>(
 type DataTableCursorPaginationConfig<Column extends string> = DataTableConfig<Column> & {
   paramNames?: CursorParamNames;
   idColumn: Column;
+  defaultSort?: SortInput<Column>;
 };
