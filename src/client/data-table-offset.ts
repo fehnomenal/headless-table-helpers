@@ -2,6 +2,7 @@ import { readonly, writable, type Readable } from 'svelte/store';
 import { buildSortString } from '../common/sort.js';
 import type { OffsetDataTableLoaderResult } from '../loader/result.js';
 import type { DataTableOffsetPaginationMeta } from '../server/meta-offset.js';
+import { apply } from '../utils/apply.js';
 import { calcOffset } from '../utils/calculations.js';
 import {
   getBaseDataTableData,
@@ -16,10 +17,11 @@ import {
   mkGetParamsForSort,
   normalizeRowsPerPageOptions,
 } from './utils.js';
+import type { DeepAwaited } from '../loader/index.js';
 
 export type ClientOffsetDataTableArgs<Column extends string, O> = [
   meta: DataTableOffsetPaginationMeta<Column>,
-  loaderResult: OffsetDataTableLoaderResult<O>,
+  loaderResult: OffsetDataTableLoaderResult<O> | DeepAwaited<OffsetDataTableLoaderResult<O>>,
   config?: DataTableClientConfig<Column, DataTableOffsetPaginationMeta<Column>>,
 ];
 
@@ -62,14 +64,15 @@ export const clientDataTableOffset = <Column extends string, O extends Record<st
       loaderResult,
     );
 
-    currentPage.then((currentPage) =>
+    apply(currentPage, (currentPage) =>
       dataTable.update((prev) => ({
         ...prev,
         paramsForPreviousPage: getParamsForPagination(meta, additionalParamsHolder, currentPage - 1),
         paramsForNextPage: getParamsForPagination(meta, additionalParamsHolder, currentPage + 1),
       })),
     );
-    totalPages.then((totalPages) =>
+
+    apply(totalPages, (totalPages) =>
       dataTable.update((prev) => ({
         ...prev,
         paramsForLastPage: getParamsForPagination(meta, additionalParamsHolder, totalPages),
