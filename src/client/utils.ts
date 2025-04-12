@@ -1,6 +1,8 @@
 import { buildSortString, invertSort, type SortInput } from '../common/sort.js';
+import type { DeepAwaited } from '../loader/index.js';
 import type { DataTableLoaderResult } from '../loader/result.js';
 import type { DataTableMeta } from '../server/meta-common.js';
+import { apply, applyMany, isPromise } from '../utils/apply.js';
 import { calcPage, calcTotalPages } from '../utils/calculations.js';
 import type { DataTableClientConfig } from './data-table-common.js';
 
@@ -37,22 +39,25 @@ export const normalizeRowsPerPageOptions = (meta: DataTableMeta<string>) => {
 
 export const getPages = <Column extends string, Meta extends DataTableMeta<Column>>(
   meta: Meta,
-  loaderResult: DataTableLoaderResult<unknown>,
+  loaderResult: DataTableLoaderResult<unknown> | DeepAwaited<DataTableLoaderResult<unknown>>,
   config: DataTableClientConfig<Column, Meta> | undefined,
 ) => {
-  const currentPage = loaderResult.currentOffset.then((currentOffset) =>
+  const currentPage = apply(loaderResult.currentOffset, (currentOffset) =>
     calcPage(currentOffset, meta.rowsPerPage),
   );
 
-  const totalPages = Promise.all([currentPage, loaderResult.rows, loaderResult.totalRows]).then(
-    async ([currentPage, rows, totalRows]) => {
+  const totalPages = applyMany(
+    [currentPage, loaderResult.rows, loaderResult.totalRows],
+    ([currentPage, rows, totalRows]) => {
       const totalPages = calcTotalPages(totalRows, meta.rowsPerPage);
 
-      if (config?.onTotalPages) {
-        await config.onTotalPages({ currentPage, currentPageSize: rows.length, totalPages, meta });
-      }
+      const res = config?.onTotalPages?.({ currentPage, currentPageSize: rows.length, totalPages, meta });
 
-      return totalPages;
+      if (isPromise(res)) {
+        return res.then(() => totalPages);
+      } else {
+        return totalPages;
+      }
     },
   );
 

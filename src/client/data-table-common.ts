@@ -1,6 +1,8 @@
 import type { Readable, Writable } from 'svelte/store';
+import type { DeepAwaited } from '../loader/index.js';
 import type { DataTableLoaderResult } from '../loader/result.js';
 import type { BaseDataTableMeta, DataTableMeta } from '../server/meta-common.js';
+import { apply, isPromise } from '../utils/apply.js';
 import type { CursorDataTable } from './data-table-cursor.js';
 import type { OffsetDataTable } from './data-table-offset.js';
 
@@ -67,9 +69,9 @@ export const updateDataTable = <Column extends string, O>(
   getParamsForSort: (column: Column) => URLSearchParams,
   paramsForFirstPage: URLSearchParams,
 
-  currentPage: Promise<number>,
-  totalPages: Promise<number>,
-  loaderResult: DataTableLoaderResult<O>,
+  currentPage: number | PromiseLike<number>,
+  totalPages: number | PromiseLike<number>,
+  loaderResult: DataTableLoaderResult<O> | DeepAwaited<DataTableLoaderResult<O>>,
 ) => {
   dataTable.update((prev) => ({
     ...prev,
@@ -79,15 +81,15 @@ export const updateDataTable = <Column extends string, O>(
     sort: meta.sort,
     sortable: meta.sortable,
 
-    isLoadingRows: true,
+    isLoadingRows: isPromise(loaderResult.rows),
 
     getParamsForSort,
 
     paramsForFirstPage,
   }));
 
-  currentPage.then((currentPage) => dataTable.update((prev) => ({ ...prev, currentPage })));
-  totalPages.then((totalPages) => dataTable.update((prev) => ({ ...prev, totalPages })));
-  loaderResult.totalRows.then((totalRows) => dataTable.update((prev) => ({ ...prev, totalRows })));
-  loaderResult.rows.then((rows) => dataTable.update((prev) => ({ ...prev, rows, isLoadingRows: false })));
+  apply(currentPage, (currentPage) => dataTable.update((prev) => ({ ...prev, currentPage })));
+  apply(totalPages, (totalPages) => dataTable.update((prev) => ({ ...prev, totalPages })));
+  apply(loaderResult.totalRows, (totalRows) => dataTable.update((prev) => ({ ...prev, totalRows })));
+  apply(loaderResult.rows, (rows) => dataTable.update((prev) => ({ ...prev, rows, isLoadingRows: false })));
 };

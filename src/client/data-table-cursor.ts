@@ -1,7 +1,9 @@
 import { readonly, writable, type Readable } from 'svelte/store';
 import { buildSortString } from '../common/sort.js';
+import type { DeepAwaited } from '../loader/index.js';
 import type { CursorDataTableLoaderResult } from '../loader/result.js';
 import type { DataTableCursorPaginationMeta } from '../server/meta-cursor.js';
+import { apply } from '../utils/apply.js';
 import {
   getBaseDataTableData,
   updateDataTable,
@@ -18,7 +20,7 @@ import {
 
 export type ClientCursorDataTableArgs<Column extends string, O> = [
   meta: DataTableCursorPaginationMeta<Column>,
-  loaderResult: CursorDataTableLoaderResult<O>,
+  loaderResult: CursorDataTableLoaderResult<O> | DeepAwaited<CursorDataTableLoaderResult<O>>,
   config?: DataTableClientConfig<Column, DataTableCursorPaginationMeta<Column>>,
 ];
 
@@ -61,7 +63,7 @@ export const clientDataTableCursor = <Column extends string, O extends Record<st
       loaderResult,
     );
 
-    loaderResult.rows.then((rows) =>
+    apply(loaderResult.rows, (rows) =>
       dataTable.update((prev) => ({
         ...prev,
         paramsForPreviousPage: getParamsForPagination(
@@ -79,7 +81,7 @@ export const clientDataTableCursor = <Column extends string, O extends Record<st
       })),
     );
 
-    loaderResult.lastPageCursor.then((cursor) =>
+    apply(loaderResult.lastPageCursor, (cursor) =>
       dataTable.update((prev) => ({
         ...prev,
         paramsForLastPage:
