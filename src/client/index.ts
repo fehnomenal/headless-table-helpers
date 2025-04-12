@@ -26,11 +26,11 @@ export function clientDataTable<Column extends string, O extends Record<string, 
   ...args: ClientOffsetDataTableArgs<Column, O> | ClientCursorDataTableArgs<Column, O>
 ): ClientOffsetDataTable<Column, O> | ClientCursorDataTable<Column, O> {
   if (isOffsetArgs(args)) {
-    return clientDataTableOffset(args);
+    return clientDataTableOffset(...args);
   }
 
   if (isCursorArgs(args)) {
-    return clientDataTableCursor(args);
+    return clientDataTableCursor(...args);
   }
 
   assertNever(args);
