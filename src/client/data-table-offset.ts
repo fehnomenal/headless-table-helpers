@@ -1,5 +1,6 @@
 import { readonly, writable, type Readable } from 'svelte/store';
 import { buildSortString } from '../common/sort.js';
+import type { DeepAwaited } from '../loader/index.js';
 import type { OffsetDataTableLoaderResult } from '../loader/result.js';
 import type { DataTableOffsetPaginationMeta } from '../server/meta-offset.js';
 import { apply } from '../utils/apply.js';
@@ -17,36 +18,35 @@ import {
   mkGetParamsForSort,
   normalizeRowsPerPageOptions,
 } from './utils.js';
-import type { DeepAwaited } from '../loader/index.js';
 
-export type ClientOffsetDataTableArgs<Column extends string, O> = [
+export type ClientOffsetDataTableArgs<O, Column extends string> = [
   meta: DataTableOffsetPaginationMeta<Column>,
   loaderResult: OffsetDataTableLoaderResult<O> | DeepAwaited<OffsetDataTableLoaderResult<O>>,
-  config?: DataTableClientConfig<Column, DataTableOffsetPaginationMeta<Column>>,
+  config?: DataTableClientConfig<DataTableOffsetPaginationMeta<Column>>,
 ];
 
-type UpdateDataTable<Column extends string, O> = (...args: ClientOffsetDataTableArgs<Column, O>) => void;
+type UpdateDataTable<O, Column extends string> = (...args: ClientOffsetDataTableArgs<O, Column>) => void;
 
-export type OffsetDataTable<Column extends string, O> = Readable<
-  BaseDataTable<Column, O> & Pick<DataTableOffsetPaginationMeta<Column>, 'paramNames' | 'sort'>
+export type OffsetDataTable<O, Column extends string> = Readable<
+  BaseDataTable<O, Column> & Pick<DataTableOffsetPaginationMeta<Column>, 'paramNames' | 'sort'>
 >;
 
-export type ClientOffsetDataTable<Column extends string, O> = OffsetDataTable<Column, O> & {
-  update: UpdateDataTable<Column, O>;
+export type ClientOffsetDataTable<O, Column extends string> = OffsetDataTable<O, Column> & {
+  update: UpdateDataTable<O, Column>;
 };
 
-export const clientDataTableOffset = <Column extends string, O extends Record<string, unknown>>(
-  ...[meta, loaderResult, config]: ClientOffsetDataTableArgs<Column, O>
-): ClientOffsetDataTable<Column, O> => {
+export const clientDataTableOffset = <O extends Record<string, unknown>, Column extends string>(
+  ...[meta, loaderResult, config]: ClientOffsetDataTableArgs<O, Column>
+): ClientOffsetDataTable<O, Column> => {
   const additionalParamsHolder: { params: [string, string][] } = { params: [] };
 
-  const dataTable: OffsetDataTableStore<Column, O> = writable({
+  const dataTable: OffsetDataTableStore<O, Column> = writable({
     ...getBaseDataTableData(meta, mkGetParamsForSort(meta, meta.sort[0], additionalParamsHolder)),
     paramNames: meta.paramNames,
     sort: meta.sort,
   });
 
-  const update: UpdateDataTable<Column, O> = (meta, loaderResult, config) => {
+  const update: UpdateDataTable<O, Column> = (meta, loaderResult, config) => {
     additionalParamsHolder.params = convertAdditionalParameters(config);
     normalizeRowsPerPageOptions(meta);
 
@@ -85,8 +85,8 @@ export const clientDataTableOffset = <Column extends string, O extends Record<st
   return { ...readonly(dataTable), update };
 };
 
-const getParamsForPagination = <Column extends string>(
-  meta: DataTableOffsetPaginationMeta<Column>,
+const getParamsForPagination = (
+  meta: DataTableOffsetPaginationMeta<string>,
   additionalParamsHolder: { params: [string, string][] },
   page: number,
 ) => {

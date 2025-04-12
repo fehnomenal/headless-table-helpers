@@ -18,34 +18,34 @@ import {
   normalizeRowsPerPageOptions,
 } from './utils.js';
 
-export type ClientCursorDataTableArgs<Column extends string, O> = [
+export type ClientCursorDataTableArgs<O, Column extends string> = [
   meta: DataTableCursorPaginationMeta<Column>,
   loaderResult: CursorDataTableLoaderResult<O> | DeepAwaited<CursorDataTableLoaderResult<O>>,
-  config?: DataTableClientConfig<Column, DataTableCursorPaginationMeta<Column>>,
+  config?: DataTableClientConfig<DataTableCursorPaginationMeta<Column>>,
 ];
 
-type UpdateDataTable<Column extends string, O> = (...args: ClientCursorDataTableArgs<Column, O>) => void;
+type UpdateDataTable<O, Column extends string> = (...args: ClientCursorDataTableArgs<O, Column>) => void;
 
-export type CursorDataTable<Column extends string, O> = Readable<
-  BaseDataTable<Column, O> & Pick<DataTableCursorPaginationMeta<Column>, 'paramNames' | 'sort'>
+export type CursorDataTable<O, Column extends string> = Readable<
+  BaseDataTable<O, Column> & Pick<DataTableCursorPaginationMeta<Column>, 'paramNames' | 'sort'>
 >;
 
-export type ClientCursorDataTable<Column extends string, O> = CursorDataTable<Column, O> & {
-  update: UpdateDataTable<Column, O>;
+export type ClientCursorDataTable<O, Column extends string> = CursorDataTable<O, Column> & {
+  update: UpdateDataTable<O, Column>;
 };
 
-export const clientDataTableCursor = <Column extends string, O extends Record<string, unknown>>(
-  ...[meta, loaderResult, config]: ClientCursorDataTableArgs<Column, O>
-): ClientCursorDataTable<Column, O> => {
+export const clientDataTableCursor = <O extends Record<string, unknown>, Column extends string>(
+  ...[meta, loaderResult, config]: ClientCursorDataTableArgs<O, Column>
+): ClientCursorDataTable<O, Column> => {
   const additionalParamsHolder: { params: [string, string][] } = { params: [] };
 
-  const dataTable: CursorDataTableStore<Column, O> = writable({
+  const dataTable: CursorDataTableStore<O, Column> = writable({
     ...getBaseDataTableData(meta, mkGetParamsForSort(meta, meta.sort, additionalParamsHolder)),
     paramNames: meta.paramNames,
     sort: meta.sort,
   });
 
-  const update: UpdateDataTable<Column, O> = (meta, loaderResult, config) => {
+  const update: UpdateDataTable<O, Column> = (meta, loaderResult, config) => {
     additionalParamsHolder.params = convertAdditionalParameters(config);
     normalizeRowsPerPageOptions(meta);
 
@@ -93,8 +93,8 @@ export const clientDataTableCursor = <Column extends string, O extends Record<st
   return { ...readonly(dataTable), update };
 };
 
-const getParamsForPagination = <Column extends string>(
-  meta: DataTableCursorPaginationMeta<Column>,
+const getParamsForPagination = (
+  meta: DataTableCursorPaginationMeta<string>,
   additionalParamsHolder: { params: [string, string][] },
   cursor: { id: unknown; sort: unknown } | null,
   direction: 'before' | 'after' | null,
@@ -123,9 +123,9 @@ const getParamsForPagination = <Column extends string>(
   return params as URLSearchParams;
 };
 
-const getCursor = <Column extends string>(
+const getCursor = (
   row: Record<string, unknown> | undefined,
-  meta: DataTableCursorPaginationMeta<Column>,
+  meta: DataTableCursorPaginationMeta<string>,
 ) => ({
   id: row?.[meta.idColumn],
   sort: row?.[meta.sort.field],

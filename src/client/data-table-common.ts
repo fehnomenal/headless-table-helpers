@@ -6,7 +6,7 @@ import { apply, isPromise } from '../utils/apply.js';
 import type { CursorDataTable } from './data-table-cursor.js';
 import type { OffsetDataTable } from './data-table-offset.js';
 
-export type DataTableClientConfig<Column extends string, Meta extends DataTableMeta<Column>> = {
+export type DataTableClientConfig<Meta extends DataTableMeta<string>> = {
   additionalParams?: Record<string, unknown>;
   onTotalPages?: (opts: {
     currentPage: number;
@@ -16,7 +16,7 @@ export type DataTableClientConfig<Column extends string, Meta extends DataTableM
   }) => void | Promise<void>;
 };
 
-export type BaseDataTable<Column extends string, O> = BaseDataTableMeta<Column> & {
+export type BaseDataTable<O, Column extends string> = BaseDataTableMeta<Column> & {
   currentPage: number | 'loading';
   rows: O[];
   isLoadingRows: boolean;
@@ -30,13 +30,13 @@ export type BaseDataTable<Column extends string, O> = BaseDataTableMeta<Column> 
   paramsForLastPage: URLSearchParams | null | 'loading';
 };
 
-export type ClientDataTable<Column extends string, O> =
-  | OffsetDataTable<Column, O>
-  | CursorDataTable<Column, O>;
+export type ClientDataTable<O, Column extends string> =
+  | OffsetDataTable<O, Column>
+  | CursorDataTable<O, Column>;
 
 type StoreValue<S> = S extends Readable<infer T> ? T : never;
 
-export const getBaseDataTableData = <Column extends string, O>(
+export const getBaseDataTableData = <O, Column extends string>(
   meta: BaseDataTableMeta<Column>,
   getParamsForSort: (column: Column) => URLSearchParams,
 ) =>
@@ -58,13 +58,13 @@ export const getBaseDataTableData = <Column extends string, O>(
     paramsForPreviousPage: 'loading',
     paramsForNextPage: 'loading',
     paramsForLastPage: 'loading',
-  }) satisfies BaseDataTable<Column, O>;
+  }) satisfies BaseDataTable<O, Column>;
 
-export type OffsetDataTableStore<Column extends string, O> = Writable<StoreValue<OffsetDataTable<Column, O>>>;
-export type CursorDataTableStore<Column extends string, O> = Writable<StoreValue<CursorDataTable<Column, O>>>;
+export type OffsetDataTableStore<O, Column extends string> = Writable<StoreValue<OffsetDataTable<O, Column>>>;
+export type CursorDataTableStore<O, Column extends string> = Writable<StoreValue<CursorDataTable<O, Column>>>;
 
-export const updateDataTable = <Column extends string, O>(
-  dataTable: Writable<BaseDataTable<Column, O>>,
+export const updateDataTable = <O, Column extends string>(
+  dataTable: Writable<BaseDataTable<O, Column>>,
   meta: DataTableMeta<Column>,
   getParamsForSort: (column: Column) => URLSearchParams,
   paramsForFirstPage: URLSearchParams,

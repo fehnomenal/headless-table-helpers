@@ -14,17 +14,17 @@ export type { ClientDataTable, DataTableClientConfig } from './data-table-common
 export { clientDataTableCursor, type CursorDataTable } from './data-table-cursor.js';
 export { clientDataTableOffset, type OffsetDataTable } from './data-table-offset.js';
 
-export function clientDataTable<Column extends string, O extends Record<string, unknown>>(
-  ...args: ClientOffsetDataTableArgs<Column, O>
-): ClientOffsetDataTable<Column, O>;
+export function clientDataTable<O extends Record<string, unknown>, Column extends string>(
+  ...args: ClientOffsetDataTableArgs<O, Column>
+): ClientOffsetDataTable<O, Column>;
 
-export function clientDataTable<Column extends string, O extends Record<string, unknown>>(
-  ...args: ClientCursorDataTableArgs<Column, O>
-): ClientCursorDataTable<Column, O>;
+export function clientDataTable<O extends Record<string, unknown>, Column extends string>(
+  ...args: ClientCursorDataTableArgs<O, Column>
+): ClientCursorDataTable<O, Column>;
 
-export function clientDataTable<Column extends string, O extends Record<string, unknown>>(
-  ...args: ClientOffsetDataTableArgs<Column, O> | ClientCursorDataTableArgs<Column, O>
-): ClientOffsetDataTable<Column, O> | ClientCursorDataTable<Column, O> {
+export function clientDataTable<O extends Record<string, unknown>, Column extends string>(
+  ...args: ClientOffsetDataTableArgs<O, Column> | ClientCursorDataTableArgs<O, Column>
+): ClientOffsetDataTable<O, Column> | ClientCursorDataTable<O, Column> {
   if (isOffsetArgs(args)) {
     return clientDataTableOffset(...args);
   }
@@ -36,10 +36,10 @@ export function clientDataTable<Column extends string, O extends Record<string, 
   assertNever(args);
 }
 
-const isOffsetArgs = <Column extends string, O extends Record<string, unknown>>(
-  args: ClientOffsetDataTableArgs<Column, O> | ClientCursorDataTableArgs<Column, O>,
-): args is ClientOffsetDataTableArgs<Column, O> => args[0].type === 'offset';
+const isOffsetArgs = <O extends Record<string, unknown>, Column extends string>(
+  args: ClientOffsetDataTableArgs<O, Column> | ClientCursorDataTableArgs<O, Column>,
+): args is ClientOffsetDataTableArgs<O, Column> => args[0].type === 'offset';
 
-const isCursorArgs = <Column extends string, O extends Record<string, unknown>>(
-  args: ClientOffsetDataTableArgs<Column, O> | ClientCursorDataTableArgs<Column, O>,
-): args is ClientCursorDataTableArgs<Column, O> => args[0].type === 'cursor';
+const isCursorArgs = <O extends Record<string, unknown>, Column extends string>(
+  args: ClientOffsetDataTableArgs<O, Column> | ClientCursorDataTableArgs<O, Column>,
+): args is ClientCursorDataTableArgs<O, Column> => args[0].type === 'cursor';
