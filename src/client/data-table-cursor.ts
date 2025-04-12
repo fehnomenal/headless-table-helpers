@@ -34,11 +34,9 @@ export type ClientCursorDataTable<Column extends string, O> = CursorDataTable<Co
   update: UpdateDataTable<Column, O>;
 };
 
-export const clientDataTableCursor = <Column extends string, O extends Record<string, unknown>>([
-  meta,
-  loaderResult,
-  config,
-]: ClientCursorDataTableArgs<Column, O>): ClientCursorDataTable<Column, O> => {
+export const clientDataTableCursor = <Column extends string, O extends Record<string, unknown>>(
+  ...[meta, loaderResult, config]: ClientCursorDataTableArgs<Column, O>
+): ClientCursorDataTable<Column, O> => {
   const additionalParamsHolder: { params: [string, string][] } = { params: [] };
 
   const dataTable: CursorDataTableStore<Column, O> = writable({
