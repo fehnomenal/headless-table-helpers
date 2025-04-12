@@ -33,11 +33,9 @@ export type ClientOffsetDataTable<Column extends string, O> = OffsetDataTable<Co
   update: UpdateDataTable<Column, O>;
 };
 
-export const clientDataTableOffset = <Column extends string, O extends Record<string, unknown>>([
-  meta,
-  loaderResult,
-  config,
-]: ClientOffsetDataTableArgs<Column, O>): ClientOffsetDataTable<Column, O> => {
+export const clientDataTableOffset = <Column extends string, O extends Record<string, unknown>>(
+  ...[meta, loaderResult, config]: ClientOffsetDataTableArgs<Column, O>
+): ClientOffsetDataTable<Column, O> => {
   const additionalParamsHolder: { params: [string, string][] } = { params: [] };
 
   const dataTable: OffsetDataTableStore<Column, O> = writable({
