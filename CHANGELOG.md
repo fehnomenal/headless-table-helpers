@@ -1,5 +1,18 @@
 # @fehnomenal/headless-table-helpers
 
+## 4.0.0
+
+### Major Changes
+
+- Make dedicated functions on the client accept the same kind of parameters as the generic function _[`#14`](https://github.com/fehnomenal/headless-table-helpers/pull/14) [`6afe56d`](https://github.com/fehnomenal/headless-table-helpers/commit/6afe56d14d07293c39ec92ff94828c5009fe2d80) [@fehnomenal](https://github.com/fehnomenal)_
+
+  Update by passing the arguments not as an array but as single arguments.
+
+### Minor Changes
+
+- Also handle loader results that are fully resolved _[`#12`](https://github.com/fehnomenal/headless-table-helpers/pull/12) [`efbe91d`](https://github.com/fehnomenal/headless-table-helpers/commit/efbe91d301cab280fecbf6835d536deacf9406af) [@fehnomenal](https://github.com/fehnomenal)_
+- Decouple column types from the type of the returned rows _[`#17`](https://github.com/fehnomenal/headless-table-helpers/pull/17) [`95b7f5e`](https://github.com/fehnomenal/headless-table-helpers/commit/95b7f5e455109ba1be12a2bc886804e870dd74f6) [@fehnomenal](https://github.com/fehnomenal)_
+
 ## 3.3.0
 
 ### Minor Changes
