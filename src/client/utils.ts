@@ -7,12 +7,12 @@ import { calcPage, calcTotalPages } from '../utils/calculations.js';
 import type { DataTableClientConfig } from './data-table-common.js';
 
 export const mkGetParamsForSort =
-  <Column extends string>(
-    meta: DataTableMeta<Column>,
-    existingSort: SortInput<Column> | undefined,
+  (
+    meta: DataTableMeta<string>,
+    existingSort: SortInput<string> | undefined,
     additionalParamsHolder: { params: [string, string][] },
   ) =>
-  (field: Column) => {
+  (field: string) => {
     const oldDirection = existingSort?.field === field ? existingSort.dir : undefined;
     const dir = oldDirection ? invertSort(oldDirection) : 'asc';
 
@@ -24,7 +24,7 @@ export const mkGetParamsForSort =
   };
 
 export const convertAdditionalParameters = (
-  config: DataTableClientConfig<string, any> | undefined,
+  config: DataTableClientConfig<never> | undefined,
 ): [string, string][] =>
   Object.entries(config?.additionalParams ?? {})
     .filter(([, v]) => !!v)
@@ -37,10 +37,10 @@ export const normalizeRowsPerPageOptions = (meta: DataTableMeta<string>) => {
   meta.rowsPerPageOptions.sort((a, b) => a - b);
 };
 
-export const getPages = <Column extends string, Meta extends DataTableMeta<Column>>(
+export const getPages = <Meta extends DataTableMeta<string>>(
   meta: Meta,
   loaderResult: DataTableLoaderResult<unknown> | DeepAwaited<DataTableLoaderResult<unknown>>,
-  config: DataTableClientConfig<Column, Meta> | undefined,
+  config: DataTableClientConfig<Meta> | undefined,
 ) => {
   const currentPage = apply(loaderResult.currentOffset, (currentOffset) =>
     calcPage(currentOffset, meta.rowsPerPage),

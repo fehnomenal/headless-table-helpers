@@ -3,13 +3,11 @@ import type { ClientDataTable } from '../client/data-table-common.ts';
 import type { ExclusifyUnion, OneProp } from './common/types.ts';
 import type { ColumnMeta } from './meta.ts';
 
-type Helpers<Column extends string, Row extends Record<Column, unknown>> = ReturnType<
-  typeof createDataTableHelper<Column, Row>
->;
+type Helpers<Row extends Record<string, unknown>> = ReturnType<typeof createDataTableHelper<Row>>;
 
-export type DataTableColumnConfig<Column extends string, Row extends Record<Column, unknown>> = {
-  [K in keyof Helpers<Column, Row>]: ReturnType<Helpers<Column, Row>[K]>;
-}[keyof Helpers<Column, Row>];
+export type DataTableColumnConfig<Row extends Record<string, unknown>> = {
+  [K in keyof Helpers<Row>]: ReturnType<Helpers<Row>[K]>;
+}[keyof Helpers<Row>];
 
 interface HeaderConfig {
   header: string | Snippet<[{ cellIdx: number }]>;
@@ -27,29 +25,29 @@ interface CellConfig<Row extends Record<string, unknown>, Val extends Record<str
   Cell: Component<CellProps<Val, Row>>;
 }
 
-export const createDataTableHelper = <Column extends keyof Row & string, Row extends Record<string, unknown>>(
-  _dataTable: ClientDataTable<string, Row>,
+export const createDataTableHelper = <Row extends Record<string, unknown>>(
+  _dataTable: ClientDataTable<Row, string>,
 ) => ({
-  accessor: createAccessorHelper<Row, Column>(),
+  accessor: createAccessorHelper<Row>(),
 
-  group: createGroupHelper<Row, Column>(),
+  group: createGroupHelper<Row>(),
 
   static: createStaticHelper<Row>(),
 });
 
-function createAccessorHelper<Row extends Record<string, unknown>, Column extends keyof Row>() {
+function createAccessorHelper<Row extends Record<string, unknown>>() {
   type Header = ExclusifyUnion<OneProp<HeaderConfig>>;
   type Cell<Value> = ExclusifyUnion<OneProp<CellConfig<Row, { value: Value }>>>;
 
   type Return = {
     type: 'accessor';
-    column?: Column;
+    column?: keyof Row & string;
     value: (row: Row) => any;
     meta?: ColumnMeta;
   } & Partial<HeaderConfig> &
     Partial<CellConfig<Row, { value: any }>>;
 
-  function accessorHelper<Col extends Column>(
+  function accessorHelper<Col extends keyof Row & string>(
     column: Col,
     config?: Partial<Header> & Partial<Cell<Row[Col]>> & { meta?: ColumnMeta },
   ): Return;
@@ -57,7 +55,7 @@ function createAccessorHelper<Row extends Record<string, unknown>, Column extend
   function accessorHelper<T>(fn: (row: Row) => T, config: Header & Cell<T> & { meta?: ColumnMeta }): Return;
 
   function accessorHelper(
-    columnOrFn: (Column & string) | ((row: Row) => any),
+    columnOrFn: (keyof Row & string) | ((row: Row) => any),
     config?: Partial<Header> & Partial<Cell<any>> & { meta?: ColumnMeta },
   ): Return {
     return {
@@ -71,31 +69,28 @@ function createAccessorHelper<Row extends Record<string, unknown>, Column extend
   return accessorHelper;
 }
 
-function createGroupHelper<Row extends Record<string, unknown>, Column extends keyof Row>() {
+function createGroupHelper<Row extends Record<string, unknown>>() {
   type Header = ExclusifyUnion<OneProp<HeaderConfig>>;
-  type Cell = ExclusifyUnion<OneProp<CellConfig<Row, { value: Value }>>>;
-  type Value = Pick<Row, Column>;
+  type Cell<Column extends keyof Row> = ExclusifyUnion<
+    OneProp<CellConfig<Row, { value: Pick<Row, Column> }>>
+  >;
 
   type Return = {
     type: 'group';
-    columns: Column[];
+    columns: (keyof Row & string)[];
     value: (row: Row) => any;
     meta?: ColumnMeta;
   } & Header &
-    Cell;
+    Cell<keyof Row>;
 
-  return function groupHelper<Columns extends Column[]>(
+  return function groupHelper<Columns extends (keyof Row & string)[]>(
     columns: Columns,
-    config: Header & Cell & { meta?: ColumnMeta },
+    config: Header & Cell<Columns[number]> & { meta?: ColumnMeta },
   ): Return {
     return {
       type: 'group',
       columns,
-      value: (row) =>
-        Object.fromEntries(columns.map((col: Columns[number]) => [col, row[col]])) as Pick<
-          Row,
-          Columns[number]
-        >,
+      value: (row) => Object.fromEntries(columns.map((col) => [col, row[col]])),
       ...config,
     };
   };
