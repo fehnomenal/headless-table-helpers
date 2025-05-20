@@ -7,7 +7,7 @@ export const createKyselyOffsetDataTableLoader = <DB, TB extends keyof DB & stri
   meta: DataTableOffsetPaginationMeta<AnyColumn<DB, TB>>,
   baseQuery: SelectQueryBuilder<DB, TB, {}>,
   sortTable: TB,
-  executeQuery: (query: SelectQueryBuilder<DB, TB, {}>, orderBy: OrderBy<DB, TB>[]) => Promise<O[]>,
+  executeQuery: (query: SelectQueryBuilder<DB, TB, {}>, orderBy: OrderBy<DB, TB>) => Promise<O[]>,
 ): OffsetDataTableLoaderResult<O> => {
   const totalRows = getTotalRows(baseQuery);
 
@@ -22,9 +22,15 @@ const getRows = <DB, TB extends keyof DB & string, O>(
   meta: DataTableOffsetPaginationMeta<AnyColumn<DB, TB>>,
   query: SelectQueryBuilder<DB, TB, {}>,
   sortTable: TB,
-  executeQuery: (query: SelectQueryBuilder<DB, TB, {}>, orderBy: OrderBy<DB, TB>[]) => Promise<O[]>,
+  executeQuery: (query: SelectQueryBuilder<DB, TB, {}>, orderBy: OrderBy<DB, TB>) => Promise<O[]>,
 ) => {
-  const orderBy = meta.sort.map((sort) => `${sortTable}.${sort.field} ${sort.dir}` as OrderBy<DB, TB>);
+  const orderBy: OrderBy<DB, TB> = (qb) => {
+    for (const sort of meta.sort) {
+      qb = qb.orderBy(`${sortTable}.${sort.field}`, sort.dir);
+    }
 
-  return executeQuery(query.orderBy(orderBy).offset(meta.currentOffset).limit(meta.rowsPerPage), orderBy);
+    return qb;
+  };
+
+  return executeQuery(query.$call(orderBy).offset(meta.currentOffset).limit(meta.rowsPerPage), orderBy);
 };
