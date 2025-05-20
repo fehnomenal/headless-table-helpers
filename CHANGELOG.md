@@ -1,5 +1,22 @@
 # @fehnomenal/headless-table-helpers
 
+## 5.0.0
+
+### Major Changes
+
+- Make the passed `orderBy` argument a function that can be `$call`ed. _[`#25`](https://github.com/fehnomenal/headless-table-helpers/pull/25) [`e84281c`](https://github.com/fehnomenal/headless-table-helpers/commit/e84281cd19a95c6febc5c010df6b979dc33f99d8) [@fehnomenal](https://github.com/fehnomenal)_
+
+  To migrate:
+
+  ```diff
+  - .orderBy(orderBy)
+  + .$call(orderBy)
+  ```
+
+### Patch Changes
+
+- Additional query parameters do no longer override paging parameters _[`#20`](https://github.com/fehnomenal/headless-table-helpers/pull/20) [`4a39a7f`](https://github.com/fehnomenal/headless-table-helpers/commit/4a39a7f3410dba17f84964070410590a722199ab) [@fehnomenal](https://github.com/fehnomenal)_
+
 ## 4.0.0
 
 ### Major Changes
