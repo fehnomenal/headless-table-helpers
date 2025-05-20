@@ -9,7 +9,7 @@ export const createKyselyCursorDataTableLoader = <DB, TB extends keyof DB & stri
   meta: DataTableCursorPaginationMeta<AnyColumn<DB, TB>>,
   baseQuery: SelectQueryBuilder<DB, TB, {}>,
   sortTable: TB,
-  executeQuery: (query: SelectQueryBuilder<DB, TB, {}>, orderBy: OrderBy<DB, TB>[]) => Promise<O[]>,
+  executeQuery: (query: SelectQueryBuilder<DB, TB, {}>, orderBy: OrderBy<DB, TB>) => Promise<O[]>,
 ): CursorDataTableLoaderResult<O> => {
   const totalRows = getTotalRows(baseQuery);
 
@@ -60,7 +60,7 @@ const getRows = <DB, TB extends keyof DB & string, O>(
   meta: DataTableCursorPaginationMeta<AnyColumn<DB, TB>>,
   query: SelectQueryBuilder<DB, TB, {}>,
   sortTable: TB,
-  executeQuery: (query: SelectQueryBuilder<DB, TB, {}>, orderBy: OrderBy<DB, TB>[]) => Promise<O[]>,
+  executeQuery: (query: SelectQueryBuilder<DB, TB, {}>, orderBy: OrderBy<DB, TB>) => Promise<O[]>,
 ) => {
   query = query.limit(meta.rowsPerPage);
 
@@ -69,14 +69,19 @@ const getRows = <DB, TB extends keyof DB & string, O>(
     sortDir = invertSort(sortDir);
   }
 
-  const orderBy: OrderBy<DB, TB>[] = [`${sortTable}.${meta.sort.field} ${sortDir}`];
-  if (meta.sort.field !== meta.idColumn) {
-    orderBy.push(`${sortTable}.${meta.idColumn} ${sortDir}`);
-  }
+  const orderBy: OrderBy<DB, TB> = (qb) => {
+    qb = qb.orderBy(`${sortTable}.${meta.sort.field}`, sortDir);
+
+    if (meta.sort.field !== meta.idColumn) {
+      qb = qb.orderBy(`${sortTable}.${meta.idColumn}`, sortDir);
+    }
+
+    return qb;
+  };
 
   query = query.$call(filter(meta, sortTable, sortDir === 'desc' ? '<' : '>'));
 
-  let returnPromise = executeQuery(query.orderBy(orderBy), orderBy);
+  let returnPromise = executeQuery(query.$call(orderBy), orderBy);
   if (meta.direction === 'before') {
     // Need to reverse the wrong order.
     returnPromise = returnPromise.then((rows) => rows.reverse());

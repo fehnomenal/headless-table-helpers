@@ -19,21 +19,21 @@ export function createKyselyDataTableLoader<DB, TB extends keyof DB & string, O>
   meta: DataTableOffsetPaginationMeta<AnyColumn<DB, TB>>,
   baseQuery: SelectQueryBuilder<DB, TB, {}>,
   sortTable: TB,
-  executeQuery: (query: SelectQueryBuilder<DB, TB, {}>, orderBy: OrderBy<DB, TB>[]) => Promise<O[]>,
+  executeQuery: (query: SelectQueryBuilder<DB, TB, {}>, orderBy: OrderBy<DB, TB>) => Promise<O[]>,
 ): OffsetDataTableLoaderResult<O>;
 
 export function createKyselyDataTableLoader<DB, TB extends keyof DB & string, O>(
   meta: DataTableCursorPaginationMeta<AnyColumn<DB, TB>>,
   baseQuery: SelectQueryBuilder<DB, TB, {}>,
   sortTable: TB,
-  executeQuery: (query: SelectQueryBuilder<DB, TB, {}>, orderBy: OrderBy<DB, TB>[]) => Promise<O[]>,
+  executeQuery: (query: SelectQueryBuilder<DB, TB, {}>, orderBy: OrderBy<DB, TB>) => Promise<O[]>,
 ): CursorDataTableLoaderResult<O>;
 
 export function createKyselyDataTableLoader<DB, TB extends keyof DB & string, O>(
   meta: DataTableMeta<AnyColumn<DB, TB>>,
   baseQuery: SelectQueryBuilder<DB, TB, {}>,
   sortTable: TB,
-  executeQuery: (query: SelectQueryBuilder<DB, TB, {}>, orderBy: OrderBy<DB, TB>[]) => Promise<O[]>,
+  executeQuery: (query: SelectQueryBuilder<DB, TB, {}>, orderBy: OrderBy<DB, TB>) => Promise<O[]>,
 ): DataTableLoaderResult<O> {
   if (meta.type === 'offset') {
     return createKyselyOffsetDataTableLoader(meta, baseQuery, sortTable, executeQuery);
