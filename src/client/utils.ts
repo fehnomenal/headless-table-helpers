@@ -17,9 +17,9 @@ export const mkGetParamsForSort =
     const dir = oldDirection ? invertSort(oldDirection) : 'asc';
 
     return new URLSearchParams([
+      ...additionalParamsHolder.params,
       [meta.paramNames.rowsPerPage, meta.rowsPerPage.toString()],
       [meta.paramNames.sort, buildSortString({ field, dir })],
-      ...additionalParamsHolder.params,
     ]) as URLSearchParams;
   };
 

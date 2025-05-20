@@ -100,8 +100,8 @@ const getParamsForPagination = (
   direction: 'before' | 'after' | null,
 ) => {
   const params = new URLSearchParams([
-    [meta.paramNames.rowsPerPage, meta.rowsPerPage.toString()],
     ...additionalParamsHolder.params,
+    [meta.paramNames.rowsPerPage, meta.rowsPerPage.toString()],
   ]);
 
   if (cursor) {
