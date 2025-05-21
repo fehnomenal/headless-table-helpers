@@ -1,5 +1,15 @@
 # @fehnomenal/headless-table-helpers
 
+## 5.1.0
+
+### Minor Changes
+
+- Accept more types for additional parameters: `URLSerachParams` and a function to manipulate them as required _[`#28`](https://github.com/fehnomenal/headless-table-helpers/pull/28) [`c09479d`](https://github.com/fehnomenal/headless-table-helpers/commit/c09479d67cf4087ad5907798b453269e2dfaa42b) [@fehnomenal](https://github.com/fehnomenal)_
+
+### Patch Changes
+
+- Apply additional parameters **AFTER** pagination parameters _[`#28`](https://github.com/fehnomenal/headless-table-helpers/pull/28) [`c09479d`](https://github.com/fehnomenal/headless-table-helpers/commit/c09479d67cf4087ad5907798b453269e2dfaa42b) [@fehnomenal](https://github.com/fehnomenal)_
+
 ## 5.0.0
 
 ### Major Changes
