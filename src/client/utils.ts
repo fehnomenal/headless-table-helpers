@@ -3,32 +3,67 @@ import type { DeepAwaited } from '../loader/index.js';
 import type { DataTableLoaderResult } from '../loader/result.js';
 import type { DataTableMeta } from '../server/meta-common.js';
 import { apply, applyMany, isPromise } from '../utils/apply.js';
+import { assertNever } from '../utils/assert-never.js';
 import { calcPage, calcTotalPages } from '../utils/calculations.js';
 import type { DataTableClientConfig } from './data-table-common.js';
 
 export const mkGetParamsForSort =
-  (
-    meta: DataTableMeta<string>,
-    existingSort: SortInput<string> | undefined,
-    additionalParamsHolder: { params: [string, string][] },
-  ) =>
+  (meta: DataTableMeta<string>, existingSort: SortInput<string> | undefined, applyParams?: ParamsApplier) =>
   (field: string) => {
     const oldDirection = existingSort?.field === field ? existingSort.dir : undefined;
     const dir = oldDirection ? invertSort(oldDirection) : 'asc';
 
-    return new URLSearchParams([
-      ...additionalParamsHolder.params,
+    const params = [
       [meta.paramNames.rowsPerPage, meta.rowsPerPage.toString()],
       [meta.paramNames.sort, buildSortString({ field, dir })],
-    ]) as URLSearchParams;
+    ] satisfies [string, string][];
+
+    return applyParams?.(params) ?? new URLSearchParams(params);
   };
 
-export const convertAdditionalParameters = (
-  config: DataTableClientConfig<never> | undefined,
-): [string, string][] =>
-  Object.entries(config?.additionalParams ?? {})
-    .filter(([, v]) => !!v)
-    .map(([k, v]) => [k, String(v)]);
+export const REMOVE_PARAM = Symbol();
+export type ParamsApplier = (
+  paginationParameters: [string, string | typeof REMOVE_PARAM][],
+) => URLSearchParams;
+
+export const mkParamsApplier = (
+  config: Pick<DataTableClientConfig<never>, 'additionalParams'> | undefined,
+): ParamsApplier => {
+  const { additionalParams: params } = config ?? {};
+
+  let _params: ConstructorParameters<typeof URLSearchParams>[0];
+
+  const applyParams: ParamsApplier = (paginationParams) => {
+    // Copy the params here so every invocation gets its own params.
+    const params = new URLSearchParams(_params);
+
+    for (const [k, v] of paginationParams) {
+      if (v === REMOVE_PARAM) {
+        params.delete(k);
+      } else {
+        params.set(k, v);
+      }
+    }
+
+    return params;
+  };
+
+  if (!params) {
+    // Nothing to do here.
+  } else if (typeof params === 'function') {
+    return (paginationParams) => params(applyParams(paginationParams));
+  } else if (params instanceof URLSearchParams) {
+    _params = params;
+  } else if (params) {
+    _params = Object.entries(params)
+      .filter(([, v]) => !!v)
+      .map(([k, v]) => [k, String(v)] as [string, string]);
+  } else {
+    assertNever(params);
+  }
+
+  return applyParams;
+};
 
 export const normalizeRowsPerPageOptions = (meta: DataTableMeta<string>) => {
   if (!meta.rowsPerPageOptions.includes(meta.rowsPerPage)) {

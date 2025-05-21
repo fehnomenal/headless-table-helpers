@@ -7,7 +7,14 @@ import type { CursorDataTable } from './data-table-cursor.js';
 import type { OffsetDataTable } from './data-table-offset.js';
 
 export type DataTableClientConfig<Meta extends DataTableMeta<string>> = {
-  additionalParams?: Record<string, unknown>;
+  /**
+   * As a `Record<string, unknown>` or `URLSearchParams`, the given params will be applied **AFTER** the pagination related parameters from this library.
+   * As a function, it is passed the pagination parameters and can modify them as it wishes.
+   */
+  additionalParams?:
+    | Record<string, unknown>
+    | URLSearchParams
+    | ((params: URLSearchParams) => URLSearchParams);
   onTotalPages?: (opts: {
     currentPage: number;
     currentPageSize: number;

@@ -12,10 +12,12 @@ import {
   type DataTableClientConfig,
 } from './data-table-common.js';
 import {
-  convertAdditionalParameters,
   getPages,
   mkGetParamsForSort,
+  mkParamsApplier,
   normalizeRowsPerPageOptions,
+  REMOVE_PARAM,
+  type ParamsApplier,
 } from './utils.js';
 
 export type ClientCursorDataTableArgs<O, Column extends string> = [
@@ -37,16 +39,14 @@ export type ClientCursorDataTable<O, Column extends string> = CursorDataTable<O,
 export const clientDataTableCursor = <O extends Record<string, unknown>, Column extends string>(
   ...[meta, loaderResult, config]: ClientCursorDataTableArgs<O, Column>
 ): ClientCursorDataTable<O, Column> => {
-  const additionalParamsHolder: { params: [string, string][] } = { params: [] };
-
   const dataTable: CursorDataTableStore<O, Column> = writable({
-    ...getBaseDataTableData(meta, mkGetParamsForSort(meta, meta.sort, additionalParamsHolder)),
+    ...getBaseDataTableData(meta, mkGetParamsForSort(meta, meta.sort)),
     paramNames: meta.paramNames,
     sort: meta.sort,
   });
 
   const update: UpdateDataTable<O, Column> = (meta, loaderResult, config) => {
-    additionalParamsHolder.params = convertAdditionalParameters(config);
+    const paramApplier = mkParamsApplier(config);
     normalizeRowsPerPageOptions(meta);
 
     const { currentPage, totalPages } = getPages(meta, loaderResult, config);
@@ -54,8 +54,8 @@ export const clientDataTableCursor = <O extends Record<string, unknown>, Column 
     updateDataTable(
       dataTable,
       meta,
-      mkGetParamsForSort(meta, meta.sort, additionalParamsHolder),
-      getParamsForPagination(meta, additionalParamsHolder, null, null),
+      mkGetParamsForSort(meta, meta.sort, paramApplier),
+      getParamsForPagination(meta, paramApplier, null, null),
       currentPage,
       totalPages,
       loaderResult,
@@ -64,15 +64,10 @@ export const clientDataTableCursor = <O extends Record<string, unknown>, Column 
     apply(loaderResult.rows, (rows) =>
       dataTable.update((prev) => ({
         ...prev,
-        paramsForPreviousPage: getParamsForPagination(
-          meta,
-          additionalParamsHolder,
-          getCursor(rows[0], meta),
-          'before',
-        ),
+        paramsForPreviousPage: getParamsForPagination(meta, paramApplier, getCursor(rows[0], meta), 'before'),
         paramsForNextPage: getParamsForPagination(
           meta,
-          additionalParamsHolder,
+          paramApplier,
           getCursor(rows[rows.length - 1], meta),
           'after',
         ),
@@ -83,7 +78,7 @@ export const clientDataTableCursor = <O extends Record<string, unknown>, Column 
       dataTable.update((prev) => ({
         ...prev,
         paramsForLastPage:
-          cursor === null ? null : getParamsForPagination(meta, additionalParamsHolder, cursor, 'after'),
+          cursor === null ? null : getParamsForPagination(meta, paramApplier, cursor, 'after'),
       })),
     );
   };
@@ -95,33 +90,20 @@ export const clientDataTableCursor = <O extends Record<string, unknown>, Column 
 
 const getParamsForPagination = (
   meta: DataTableCursorPaginationMeta<string>,
-  additionalParamsHolder: { params: [string, string][] },
+  applyParams: ParamsApplier,
   cursor: { id: unknown; sort: unknown } | null,
   direction: 'before' | 'after' | null,
-) => {
-  const params = new URLSearchParams([
-    ...additionalParamsHolder.params,
+) =>
+  applyParams([
     [meta.paramNames.rowsPerPage, meta.rowsPerPage.toString()],
+    [meta.paramNames.cursorId, cursor ? `${cursor.id}` : REMOVE_PARAM],
+    [meta.paramNames.sort, meta.sort.field !== meta.idColumn ? buildSortString(meta.sort) : REMOVE_PARAM],
+    [
+      meta.paramNames.cursorSort,
+      meta.sort.field !== meta.idColumn && cursor ? `${cursor.sort}` : REMOVE_PARAM,
+    ],
+    [meta.paramNames.direction, direction ?? REMOVE_PARAM],
   ]);
-
-  if (cursor) {
-    params.set(meta.paramNames.cursorId, `${cursor.id}`);
-  }
-
-  if (meta.sort.field !== meta.idColumn) {
-    params.set(meta.paramNames.sort, buildSortString(meta.sort));
-
-    if (cursor) {
-      params.set(meta.paramNames.cursorSort, `${cursor.sort}`);
-    }
-  }
-
-  if (direction) {
-    params.set(meta.paramNames.direction, direction);
-  }
-
-  return params as URLSearchParams;
-};
 
 const getCursor = (
   row: Record<string, unknown> | undefined,
