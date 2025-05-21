@@ -13,10 +13,12 @@ import {
   type OffsetDataTableStore,
 } from './data-table-common.js';
 import {
-  convertAdditionalParameters,
   getPages,
   mkGetParamsForSort,
+  mkParamsApplier,
   normalizeRowsPerPageOptions,
+  REMOVE_PARAM,
+  type ParamsApplier,
 } from './utils.js';
 
 export type ClientOffsetDataTableArgs<O, Column extends string> = [
@@ -38,16 +40,14 @@ export type ClientOffsetDataTable<O, Column extends string> = OffsetDataTable<O,
 export const clientDataTableOffset = <O extends Record<string, unknown>, Column extends string>(
   ...[meta, loaderResult, config]: ClientOffsetDataTableArgs<O, Column>
 ): ClientOffsetDataTable<O, Column> => {
-  const additionalParamsHolder: { params: [string, string][] } = { params: [] };
-
   const dataTable: OffsetDataTableStore<O, Column> = writable({
-    ...getBaseDataTableData(meta, mkGetParamsForSort(meta, meta.sort[0], additionalParamsHolder)),
+    ...getBaseDataTableData(meta, mkGetParamsForSort(meta, meta.sort[0])),
     paramNames: meta.paramNames,
     sort: meta.sort,
   });
 
   const update: UpdateDataTable<O, Column> = (meta, loaderResult, config) => {
-    additionalParamsHolder.params = convertAdditionalParameters(config);
+    const paramApplier = mkParamsApplier(config);
     normalizeRowsPerPageOptions(meta);
 
     const { currentPage, totalPages } = getPages(meta, loaderResult, config);
@@ -55,8 +55,8 @@ export const clientDataTableOffset = <O extends Record<string, unknown>, Column 
     updateDataTable(
       dataTable,
       meta,
-      mkGetParamsForSort(meta, meta.sort[0], additionalParamsHolder),
-      getParamsForPagination(meta, additionalParamsHolder, 1),
+      mkGetParamsForSort(meta, meta.sort[0], paramApplier),
+      getParamsForPagination(meta, paramApplier, 1),
       currentPage,
       totalPages,
       loaderResult,
@@ -65,15 +65,15 @@ export const clientDataTableOffset = <O extends Record<string, unknown>, Column 
     apply(currentPage, (currentPage) =>
       dataTable.update((prev) => ({
         ...prev,
-        paramsForPreviousPage: getParamsForPagination(meta, additionalParamsHolder, currentPage - 1),
-        paramsForNextPage: getParamsForPagination(meta, additionalParamsHolder, currentPage + 1),
+        paramsForPreviousPage: getParamsForPagination(meta, paramApplier, currentPage - 1),
+        paramsForNextPage: getParamsForPagination(meta, paramApplier, currentPage + 1),
       })),
     );
 
     apply(totalPages, (totalPages) =>
       dataTable.update((prev) => ({
         ...prev,
-        paramsForLastPage: getParamsForPagination(meta, additionalParamsHolder, totalPages),
+        paramsForLastPage: getParamsForPagination(meta, paramApplier, totalPages),
       })),
     );
 
@@ -87,21 +87,11 @@ export const clientDataTableOffset = <O extends Record<string, unknown>, Column 
 
 const getParamsForPagination = (
   meta: DataTableOffsetPaginationMeta<string>,
-  additionalParamsHolder: { params: [string, string][] },
+  applyParams: ParamsApplier,
   page: number,
-) => {
-  const params = new URLSearchParams([
-    ...additionalParamsHolder.params,
+) =>
+  applyParams([
     [meta.paramNames.rowsPerPage, meta.rowsPerPage.toString()],
+    [meta.paramNames.currentOffset, page > 1 ? calcOffset(page, meta.rowsPerPage).toString() : REMOVE_PARAM],
+    ...meta.sort.map((sort) => [meta.paramNames.sort, buildSortString(sort)] as [string, string]),
   ]);
-
-  if (page > 1) {
-    params.set(meta.paramNames.currentOffset, calcOffset(page, meta.rowsPerPage).toString());
-  }
-
-  for (const sort of meta.sort) {
-    params.append(meta.paramNames.sort, buildSortString(sort));
-  }
-
-  return params as URLSearchParams;
-};
