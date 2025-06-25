@@ -59,10 +59,10 @@ export const mkParamsApplier = (
       .filter(([, value]) => !!value)
       .flatMap(([key, value]) => {
         if (Array.isArray(value)) {
-          return value.map((v) => [key, String(v)]);
+          return value.map((v) => [key, String(v)] as [string, string]);
         }
 
-        return [[key, String(value)]];
+        return [[key, String(value)] as [string, string]];
       });
   } else {
     assertNever(params);
