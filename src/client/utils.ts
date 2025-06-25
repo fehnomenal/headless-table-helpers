@@ -52,12 +52,18 @@ export const mkParamsApplier = (
     // Nothing to do here.
   } else if (typeof params === 'function') {
     return (paginationParams) => params(applyParams(paginationParams));
-  } else if (params instanceof URLSearchParams) {
+  } else if (params instanceof URLSearchParams || Array.isArray(params)) {
     _params = params;
   } else if (params) {
     _params = Object.entries(params)
-      .filter(([, v]) => !!v)
-      .map(([k, v]) => [k, String(v)] as [string, string]);
+      .filter(([, value]) => !!value)
+      .flatMap(([key, value]) => {
+        if (Array.isArray(value)) {
+          return value.map((v) => [key, String(v)]);
+        }
+
+        return [[key, String(value)]];
+      });
   } else {
     assertNever(params);
   }

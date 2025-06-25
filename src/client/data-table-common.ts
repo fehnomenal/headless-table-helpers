@@ -8,11 +8,12 @@ import type { OffsetDataTable } from './data-table-offset.js';
 
 export type DataTableClientConfig<Meta extends DataTableMeta<string>> = {
   /**
-   * As a `Record<string, unknown>` or `URLSearchParams`, the given params will be applied **AFTER** the pagination related parameters from this library.
+   * As a `Record<string, unknown>`, `[string, string][]` or `URLSearchParams`, the given params will be applied **AFTER** the pagination related parameters from this library.
    * As a function, it is passed the pagination parameters and can modify them as it wishes.
    */
   additionalParams?:
     | Record<string, unknown>
+    | [string, string][]
     | URLSearchParams
     | ((params: URLSearchParams) => URLSearchParams);
   onTotalPages?: (opts: {
