@@ -6,6 +6,7 @@ on:
       - main
 
 permissions: {}
+
 jobs:
   release:
     # prevents this action from running on forks

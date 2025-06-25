@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '**'
+      - '!main'
+
+permissions: {}
+
+jobs:
+  release:
+    # prevents this action from running on forks
+    if: github.repository == 'fehnomenal/headless-table-helpers'
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - run: bun install
+      - run: bun run build
