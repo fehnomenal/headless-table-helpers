@@ -1,5 +1,11 @@
 # @fehnomenal/headless-table-helpers
 
+## 5.2.0
+
+### Minor Changes
+
+- Enable even more types of additional parameters: entries as `[string, string][]` and convert object values with arrays to multiple occurrences of the same parameter _[`#30`](https://github.com/fehnomenal/headless-table-helpers/pull/30) [`1e12a94`](https://github.com/fehnomenal/headless-table-helpers/commit/1e12a94170ab2a75a83caa84f55d587b0180abd6) [@fehnomenal](https://github.com/fehnomenal)_
+
 ## 5.1.0
 
 ### Minor Changes
