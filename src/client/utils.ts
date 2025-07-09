@@ -1,30 +1,12 @@
-import { buildSortString, invertSort, type SortInput } from '../common/sort.js';
-import type { DeepAwaited } from '../loader/index.js';
-import type { DataTableLoaderResult } from '../loader/result.js';
+import type { ResourceReturn } from 'runed';
 import type { DataTableMeta } from '../server/meta-common.js';
-import { apply, applyMany, isPromise } from '../utils/apply.js';
 import { assertNever } from '../utils/assert-never.js';
-import { calcPage, calcTotalPages } from '../utils/calculations.js';
-import type { DataTableClientConfig } from './data-table-common.js';
+import type { DataTableClientConfig } from './data-table-common.svelte.js';
 
-export const mkGetParamsForSort =
-  <M extends DataTableMeta<string>>(meta: M, existingSort: SortInput<string>[], applyParams: ParamsApplier) =>
-  (field: string) => {
-    const isAlreadySorted = existingSort.some((sort) => sort.field === field);
-
-    const sort = isAlreadySorted
-      ? existingSort.map((sort) => {
-          const oldDirection = sort.field === field ? sort.dir : undefined;
-          const dir = oldDirection ? invertSort(oldDirection) : 'asc';
-          return buildSortString({ field: sort.field, dir });
-        })
-      : [buildSortString({ field, dir: 'asc' })];
-
-    return applyParams({
-      rowsPerPage: meta.rowsPerPage.toString(),
-      sort,
-    });
-  };
+export type Loadable<T, HasInitialValue extends boolean = false> = Pick<
+  ResourceReturn<T, unknown, HasInitialValue>,
+  'current' | 'loading'
+>;
 
 export type ParamsApplier = <M extends DataTableMeta<string>>(paginationParameters: {
   [K in keyof M['paramNames']]: string | string[] | null;
@@ -69,50 +51,16 @@ export const mkParamsApplier = <M extends DataTableMeta<string>>(
       .filter(([, value]) => !!value)
       .flatMap(([key, value]) => {
         if (Array.isArray(value)) {
-          return value.map((v) => [key, stringifyValue(v)] as [string, string]);
+          return value.map((v) => [key, stringifyValue(v)] satisfies [string, string]);
         }
 
-        return [[key, stringifyValue(value)] as [string, string]];
+        return [[key, stringifyValue(value)] satisfies [string, string]];
       });
   } else {
     assertNever(params);
   }
 
   return applyParams;
-};
-
-export const normalizeRowsPerPageOptions = (meta: DataTableMeta<string>) => {
-  if (!meta.rowsPerPageOptions.includes(meta.rowsPerPage)) {
-    meta.rowsPerPageOptions.push(meta.rowsPerPage);
-  }
-  meta.rowsPerPageOptions.sort((a, b) => a - b);
-};
-
-export const getPages = <Meta extends DataTableMeta<string>>(
-  meta: Meta,
-  loaderResult: DataTableLoaderResult<unknown> | DeepAwaited<DataTableLoaderResult<unknown>>,
-  config: DataTableClientConfig<Meta> | undefined,
-) => {
-  const currentPage = apply(loaderResult.currentOffset, (currentOffset) =>
-    calcPage(currentOffset, meta.rowsPerPage),
-  );
-
-  const totalPages = applyMany(
-    [currentPage, loaderResult.rows, loaderResult.totalRows],
-    ([currentPage, rows, totalRows]) => {
-      const totalPages = calcTotalPages(totalRows, meta.rowsPerPage);
-
-      const res = config?.onTotalPages?.({ currentPage, currentPageSize: rows.length, totalPages, meta });
-
-      if (isPromise(res)) {
-        return res.then(() => totalPages);
-      } else {
-        return totalPages;
-      }
-    },
-  );
-
-  return { currentPage, totalPages };
 };
 
 export function stringifyValue(value: unknown): string {

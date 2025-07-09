@@ -1,5 +1,4 @@
 import type { Component, Snippet } from 'svelte';
-import type { ClientDataTable } from '../client/data-table-common.ts';
 import type { ExclusifyUnion, OneProp } from './common/types.ts';
 import type { ColumnMeta } from './meta.ts';
 
@@ -25,9 +24,7 @@ interface CellConfig<Row extends Record<string, unknown>, Val extends Record<str
   Cell: Component<CellProps<Val, Row>>;
 }
 
-export const createDataTableHelper = <Row extends Record<string, unknown>>(
-  _dataTable: ClientDataTable<Row, string>,
-) => ({
+export const createDataTableHelper = <Row extends Record<string, unknown>>() => ({
   accessor: createAccessorHelper<Row>(),
 
   group: createGroupHelper<Row>(),

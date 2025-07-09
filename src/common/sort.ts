@@ -1,8 +1,12 @@
 import { assertNever } from '../utils/assert-never.js';
 
+type Asc = 'asc';
+type Desc = 'desc';
+type Dir = Asc | Desc;
+
 export type SortInput<Column extends string> = {
   field: Column;
-  dir: 'asc' | 'desc';
+  dir: Dir;
 };
 
 export const extractSortInput = <Column extends string>(
@@ -14,14 +18,18 @@ export const extractSortInput = <Column extends string>(
 };
 
 const getSortInput = <Column extends string>(str: string): SortInput<Column> | null => {
-  if (str.endsWith(':asc')) {
+  let idx = str.lastIndexOf(':asc');
+  if (idx > 0) {
     return {
-      field: str.slice(0, -':asc'.length) as Column,
+      field: str.slice(0, idx) as Column,
       dir: 'asc',
     };
-  } else if (str.endsWith(':desc')) {
+  }
+
+  idx = str.lastIndexOf(':desc');
+  if (idx > 0) {
     return {
-      field: str.slice(0, -':desc'.length) as Column,
+      field: str.slice(0, idx) as Column,
       dir: 'desc',
     };
   }
@@ -29,13 +37,13 @@ const getSortInput = <Column extends string>(str: string): SortInput<Column> | n
   return null;
 };
 
-export const buildSortString = <Column extends string>({ field, dir }: SortInput<Column>) =>
+export const buildSortString = <Column extends string>({ field, dir }: SortInput<Column>): string =>
   `${field}:${dir}`;
 
-export function invertSort(dir: 'asc'): 'desc';
-export function invertSort(dir: 'desc'): 'asc';
-export function invertSort(dir: 'asc' | 'desc'): 'asc' | 'desc';
-export function invertSort(dir: 'asc' | 'desc') {
+export function invertSort(dir: Asc): Desc;
+export function invertSort(dir: Desc): Asc;
+export function invertSort(dir: Dir): Dir;
+export function invertSort(dir: Dir) {
   if (dir === 'asc') {
     return 'desc';
   }
