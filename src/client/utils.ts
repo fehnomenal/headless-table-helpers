@@ -8,25 +8,24 @@ import { calcPage, calcTotalPages } from '../utils/calculations.js';
 import type { DataTableClientConfig } from './data-table-common.js';
 
 export const mkGetParamsForSort =
-  (meta: DataTableMeta<string>, existingSort: SortInput<string> | undefined, applyParams?: ParamsApplier) =>
-  (field: string) => {
-    const oldDirection = existingSort?.field === field ? existingSort.dir : undefined;
-    const dir = oldDirection ? invertSort(oldDirection) : 'asc';
+  <M extends DataTableMeta<string>>(meta: M, existingSort: SortInput<string>[], applyParams: ParamsApplier) =>
+  (field: string) =>
+    applyParams({
+      rowsPerPage: meta.rowsPerPage.toString(),
+      sort: existingSort.map((sort) => {
+        const oldDirection = sort?.field === field ? sort.dir : undefined;
+        const dir = oldDirection ? invertSort(oldDirection) : 'asc';
 
-    const params = [
-      [meta.paramNames.rowsPerPage, meta.rowsPerPage.toString()],
-      [meta.paramNames.sort, buildSortString({ field, dir })],
-    ] satisfies [string, string][];
+        return buildSortString({ field, dir });
+      }),
+    });
 
-    return applyParams?.(params) ?? new URLSearchParams(params);
-  };
+export type ParamsApplier = <M extends DataTableMeta<string>>(paginationParameters: {
+  [K in keyof M['paramNames']]: string | string[] | null;
+}) => URLSearchParams;
 
-export const REMOVE_PARAM = Symbol();
-export type ParamsApplier = (
-  paginationParameters: [string, string | typeof REMOVE_PARAM][],
-) => URLSearchParams;
-
-export const mkParamsApplier = (
+export const mkParamsApplier = <M extends DataTableMeta<string>>(
+  meta: M,
   config: Pick<DataTableClientConfig<never>, 'additionalParams'> | undefined,
 ): ParamsApplier => {
   const { additionalParams: params } = config ?? {};
@@ -37,11 +36,16 @@ export const mkParamsApplier = (
     // Copy the params here so every invocation gets its own params.
     const params = new URLSearchParams(_params);
 
-    for (const [k, v] of paginationParams) {
-      if (v === REMOVE_PARAM) {
-        params.delete(k);
-      } else {
-        params.set(k, v);
+    for (const [key, value] of Object.entries(paginationParams)) {
+      const name = (meta.paramNames as Record<string, string>)[key];
+      params.delete(name);
+
+      if (Array.isArray(value)) {
+        for (const val of value) {
+          params.append(name, val);
+        }
+      } else if (value !== null) {
+        params.append(name, value);
       }
     }
 

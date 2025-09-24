@@ -44,10 +44,7 @@ export type ClientDataTable<O, Column extends string> =
 
 type StoreValue<S> = S extends Readable<infer T> ? T : never;
 
-export const getBaseDataTableData = <O, Column extends string>(
-  meta: BaseDataTableMeta<Column>,
-  getParamsForSort: (column: Column) => URLSearchParams,
-) =>
+export const getBaseDataTableData = <O, Column extends string>(meta: BaseDataTableMeta<Column>) =>
   ({
     rowsPerPage: meta.rowsPerPage,
     rowsPerPageOptions: meta.rowsPerPageOptions,
@@ -60,7 +57,7 @@ export const getBaseDataTableData = <O, Column extends string>(
     rows: [],
     isLoadingRows: true,
 
-    getParamsForSort,
+    getParamsForSort: () => new URLSearchParams(),
 
     paramsForFirstPage: 'loading',
     paramsForPreviousPage: 'loading',
