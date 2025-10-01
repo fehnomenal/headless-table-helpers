@@ -17,6 +17,7 @@ import {
   mkParamsApplier,
   normalizeRowsPerPageOptions,
   REMOVE_PARAM,
+  stringifyValue,
   type ParamsApplier,
 } from './utils.js';
 
@@ -96,11 +97,11 @@ const getParamsForPagination = (
 ) =>
   applyParams([
     [meta.paramNames.rowsPerPage, meta.rowsPerPage.toString()],
-    [meta.paramNames.cursorId, cursor ? `${cursor.id}` : REMOVE_PARAM],
+    [meta.paramNames.cursorId, cursor ? stringifyValue(cursor.id) : REMOVE_PARAM],
     [meta.paramNames.sort, meta.sort.field !== meta.idColumn ? buildSortString(meta.sort) : REMOVE_PARAM],
     [
       meta.paramNames.cursorSort,
-      meta.sort.field !== meta.idColumn && cursor ? `${cursor.sort}` : REMOVE_PARAM,
+      meta.sort.field !== meta.idColumn && cursor ? stringifyValue(cursor.sort) : REMOVE_PARAM,
     ],
     [meta.paramNames.direction, direction ?? REMOVE_PARAM],
   ]);
