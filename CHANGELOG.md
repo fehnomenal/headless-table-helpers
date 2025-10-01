@@ -1,5 +1,11 @@
 # @fehnomenal/headless-table-helpers
 
+## 5.2.1
+
+### Patch Changes
+
+- Correctly convert dates to strings in parameters _[`#35`](https://github.com/fehnomenal/headless-table-helpers/pull/35) [`7b5a93a`](https://github.com/fehnomenal/headless-table-helpers/commit/7b5a93a61930b8413dff97ed8b5ab1816d279d9e) [@fehnomenal](https://github.com/fehnomenal)_
+
 ## 5.2.0
 
 ### Minor Changes
