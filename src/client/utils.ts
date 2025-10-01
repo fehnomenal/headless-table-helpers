@@ -59,10 +59,10 @@ export const mkParamsApplier = (
       .filter(([, value]) => !!value)
       .flatMap(([key, value]) => {
         if (Array.isArray(value)) {
-          return value.map((v) => [key, String(v)] as [string, string]);
+          return value.map((v) => [key, stringifyValue(v)] as [string, string]);
         }
 
-        return [[key, String(value)] as [string, string]];
+        return [[key, stringifyValue(value)] as [string, string]];
       });
   } else {
     assertNever(params);
@@ -104,3 +104,11 @@ export const getPages = <Meta extends DataTableMeta<string>>(
 
   return { currentPage, totalPages };
 };
+
+export function stringifyValue(value: unknown): string {
+  if (value instanceof Date) {
+    return value.toISOString();
+  }
+
+  return String(value);
+}
