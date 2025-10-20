@@ -16,7 +16,6 @@ import {
   mkGetParamsForSort,
   mkParamsApplier,
   normalizeRowsPerPageOptions,
-  REMOVE_PARAM,
   stringifyValue,
   type ParamsApplier,
 } from './utils.js';
@@ -41,13 +40,13 @@ export const clientDataTableCursor = <O extends Record<string, unknown>, Column 
   ...[meta, loaderResult, config]: ClientCursorDataTableArgs<O, Column>
 ): ClientCursorDataTable<O, Column> => {
   const dataTable: CursorDataTableStore<O, Column> = writable({
-    ...getBaseDataTableData(meta, mkGetParamsForSort(meta, meta.sort)),
+    ...getBaseDataTableData(meta),
     paramNames: meta.paramNames,
     sort: meta.sort,
   });
 
   const update: UpdateDataTable<O, Column> = (meta, loaderResult, config) => {
-    const paramApplier = mkParamsApplier(config);
+    const paramApplier = mkParamsApplier(meta, config);
     normalizeRowsPerPageOptions(meta);
 
     const { currentPage, totalPages } = getPages(meta, loaderResult, config);
@@ -55,7 +54,7 @@ export const clientDataTableCursor = <O extends Record<string, unknown>, Column 
     updateDataTable(
       dataTable,
       meta,
-      mkGetParamsForSort(meta, meta.sort, paramApplier),
+      mkGetParamsForSort(meta, [meta.sort], paramApplier),
       getParamsForPagination(meta, paramApplier, null, null),
       currentPage,
       totalPages,
@@ -95,16 +94,13 @@ const getParamsForPagination = (
   cursor: { id: unknown; sort: unknown } | null,
   direction: 'before' | 'after' | null,
 ) =>
-  applyParams([
-    [meta.paramNames.rowsPerPage, meta.rowsPerPage.toString()],
-    [meta.paramNames.cursorId, cursor ? stringifyValue(cursor.id) : REMOVE_PARAM],
-    [meta.paramNames.sort, meta.sort.field !== meta.idColumn ? buildSortString(meta.sort) : REMOVE_PARAM],
-    [
-      meta.paramNames.cursorSort,
-      meta.sort.field !== meta.idColumn && cursor ? stringifyValue(cursor.sort) : REMOVE_PARAM,
-    ],
-    [meta.paramNames.direction, direction ?? REMOVE_PARAM],
-  ]);
+  applyParams<DataTableCursorPaginationMeta<string>>({
+    rowsPerPage: meta.rowsPerPage.toString(),
+    cursorId: cursor ? stringifyValue(cursor.id) : null,
+    sort: meta.sort.field !== meta.idColumn ? buildSortString(meta.sort) : null,
+    cursorSort: meta.sort.field !== meta.idColumn && cursor ? stringifyValue(cursor.sort) : null,
+    direction: direction,
+  });
 
 const getCursor = (
   row: Record<string, unknown> | undefined,
