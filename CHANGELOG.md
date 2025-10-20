@@ -1,5 +1,11 @@
 # @fehnomenal/headless-table-helpers
 
+## 5.2.2
+
+### Patch Changes
+
+- Sorting by multiple fields no longer gets lost when changing pages _[`#38`](https://github.com/fehnomenal/headless-table-helpers/pull/38) [`c27bf81`](https://github.com/fehnomenal/headless-table-helpers/commit/c27bf810f870cd2af827d3893fcb31690fd1d1c2) [@fehnomenal](https://github.com/fehnomenal)_
+
 ## 5.2.1
 
 ### Patch Changes
