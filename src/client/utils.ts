@@ -9,16 +9,22 @@ import type { DataTableClientConfig } from './data-table-common.js';
 
 export const mkGetParamsForSort =
   <M extends DataTableMeta<string>>(meta: M, existingSort: SortInput<string>[], applyParams: ParamsApplier) =>
-  (field: string) =>
-    applyParams({
-      rowsPerPage: meta.rowsPerPage.toString(),
-      sort: existingSort.map((sort) => {
-        const oldDirection = sort?.field === field ? sort.dir : undefined;
-        const dir = oldDirection ? invertSort(oldDirection) : 'asc';
+  (field: string) => {
+    const isAlreadySorted = existingSort.some((sort) => sort.field === field);
 
-        return buildSortString({ field, dir });
-      }),
+    const sort = isAlreadySorted
+      ? existingSort.map((sort) => {
+          const oldDirection = sort.field === field ? sort.dir : undefined;
+          const dir = oldDirection ? invertSort(oldDirection) : 'asc';
+          return buildSortString({ field: sort.field, dir });
+        })
+      : [buildSortString({ field, dir: 'asc' })];
+
+    return applyParams({
+      rowsPerPage: meta.rowsPerPage.toString(),
+      sort,
     });
+  };
 
 export type ParamsApplier = <M extends DataTableMeta<string>>(paginationParameters: {
   [K in keyof M['paramNames']]: string | string[] | null;
