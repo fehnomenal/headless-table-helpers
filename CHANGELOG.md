@@ -1,5 +1,11 @@
 # @fehnomenal/headless-table-helpers
 
+## 5.2.3
+
+### Patch Changes
+
+- Correctly create search params for previously unsorted fields _[`#40`](https://github.com/fehnomenal/headless-table-helpers/pull/40) [`6e23adf`](https://github.com/fehnomenal/headless-table-helpers/commit/6e23adf118a9c1218c064edf93114ca74ad0a5f9) [@fehnomenal](https://github.com/fehnomenal)_
+
 ## 5.2.2
 
 ### Patch Changes
