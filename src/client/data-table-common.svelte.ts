@@ -74,13 +74,17 @@ export abstract class BaseDataTable<O, Column extends string, M extends BaseData
       calcTotalPages(await totalRows, meta.rowsPerPage),
     );
 
-    this.rows = resource(
+    const rows = resource(
       () => loaderResult.rows,
       async (rows) => await rows,
       {
-        initialValue: [],
+        // This needs to be undefined to set the initial loading to `true`. The real initial value is set
+        // right after creating this resource.
+        initialValue: undefined as unknown as [],
       },
     );
+    rows.mutate([]);
+    this.rows = rows;
 
     if (config_) {
       watch(
