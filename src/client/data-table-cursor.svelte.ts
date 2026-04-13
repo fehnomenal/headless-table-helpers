@@ -5,12 +5,12 @@ import type { DataTableCursorPaginationMeta } from '../server/meta-cursor.js';
 import { BaseDataTable, type DataTableClientConfig } from './data-table-common.svelte.js';
 import { mkParamsApplier, stringifyValue, type Loadable, type ParamsApplier } from './utils.js';
 
-export class ClientDataTableCursor<
-  O extends Record<string, unknown>,
-  Column extends string,
-> extends BaseDataTable<O, Column, DataTableCursorPaginationMeta<Column>> {
-  public paramNames: DataTableCursorPaginationMeta<Column>['paramNames'];
-  public sort: SortInput<Column>;
+export class ClientDataTableCursor<O extends Record<string, unknown>> extends BaseDataTable<
+  O,
+  DataTableCursorPaginationMeta<string>
+> {
+  public paramNames: DataTableCursorPaginationMeta<string>['paramNames'];
+  public sort: SortInput<string>;
 
   public paramsForFirstPage: Loadable<URLSearchParams>;
   public paramsForPreviousPage: Loadable<URLSearchParams>;
@@ -20,9 +20,9 @@ export class ClientDataTableCursor<
   protected applyParams: ParamsApplier;
 
   constructor(
-    meta_: () => DataTableCursorPaginationMeta<Column>,
+    meta_: () => DataTableCursorPaginationMeta<string>,
     loaderResult_: () => CursorDataTableLoaderResult<O> | DeepAwaited<CursorDataTableLoaderResult<O>>,
-    config_?: () => DataTableClientConfig<DataTableCursorPaginationMeta<Column>>,
+    config_?: () => DataTableClientConfig<DataTableCursorPaginationMeta<string>>,
   ) {
     super(meta_, loaderResult_, config_);
 
@@ -62,7 +62,7 @@ export class ClientDataTableCursor<
     );
   }
 
-  protected getExistingSort(meta: DataTableCursorPaginationMeta<Column>): SortInput<Column>[] {
+  protected getExistingSort(meta: DataTableCursorPaginationMeta<string>): SortInput<string>[] {
     return [meta.sort];
   }
 }

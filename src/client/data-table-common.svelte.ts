@@ -23,7 +23,7 @@ export type DataTableClientConfig<Meta extends BaseDataTableMeta<string>> = {
   }) => void | Promise<void>;
 };
 
-export abstract class BaseDataTable<O, Column extends string, M extends BaseDataTableMeta<Column>> {
+export abstract class BaseDataTable<O, M extends BaseDataTableMeta<string>> {
   public meta: M;
 
   public currentPage: Loadable<number>;
@@ -38,7 +38,7 @@ export abstract class BaseDataTable<O, Column extends string, M extends BaseData
 
   protected abstract applyParams: ParamsApplier;
 
-  readonly getParamsForSort: (column: Column) => URLSearchParams;
+  readonly getParamsForSort: (column: string) => URLSearchParams;
 
   declare readonly $rowType: O;
 
@@ -123,5 +123,5 @@ export abstract class BaseDataTable<O, Column extends string, M extends BaseData
     });
   }
 
-  protected abstract getExistingSort(meta: M): SortInput<Column>[];
+  protected abstract getExistingSort(meta: M): SortInput<string>[];
 }

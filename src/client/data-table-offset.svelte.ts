@@ -6,12 +6,12 @@ import { calcOffset } from '../utils/calculations.js';
 import { BaseDataTable, type DataTableClientConfig } from './data-table-common.svelte.js';
 import { mkParamsApplier, type Loadable, type ParamsApplier } from './utils.js';
 
-export class ClientDataTableOffset<
-  O extends Record<string, unknown>,
-  Column extends string,
-> extends BaseDataTable<O, Column, DataTableOffsetPaginationMeta<Column>> {
-  public paramNames: DataTableOffsetPaginationMeta<Column>['paramNames'];
-  public sort: SortInput<Column>[];
+export class ClientDataTableOffset<O extends Record<string, unknown>> extends BaseDataTable<
+  O,
+  DataTableOffsetPaginationMeta<string>
+> {
+  public paramNames: DataTableOffsetPaginationMeta<string>['paramNames'];
+  public sort: SortInput<string>[];
 
   public paramsForFirstPage: Loadable<URLSearchParams>;
   public paramsForPreviousPage: Loadable<URLSearchParams>;
@@ -21,9 +21,9 @@ export class ClientDataTableOffset<
   protected applyParams: ParamsApplier;
 
   constructor(
-    meta_: () => DataTableOffsetPaginationMeta<Column>,
+    meta_: () => DataTableOffsetPaginationMeta<string>,
     loaderResult_: () => OffsetDataTableLoaderResult<O> | DeepAwaited<OffsetDataTableLoaderResult<O>>,
-    config_?: () => DataTableClientConfig<DataTableOffsetPaginationMeta<Column>>,
+    config_?: () => DataTableClientConfig<DataTableOffsetPaginationMeta<string>>,
   ) {
     super(meta_, loaderResult_, config_);
 
@@ -56,7 +56,7 @@ export class ClientDataTableOffset<
     );
   }
 
-  protected getExistingSort(meta: DataTableOffsetPaginationMeta<Column>): SortInput<Column>[] {
+  protected getExistingSort(meta: DataTableOffsetPaginationMeta<string>): SortInput<string>[] {
     return meta.sort;
   }
 }
