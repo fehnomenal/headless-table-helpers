@@ -1,5 +1,16 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "commitBody": "[skip ci]",
-  "extends": ["config:recommended", ":pinSkipCi", ":pinVersions", "github>fehnomenal/renovate-config(weekly)"]
+  "extends": [
+    "config:recommended",
+    ":pinSkipCi",
+    ":pinVersions",
+    "github>fehnomenal/renovate-config(weekly)"
+  ],
+  "packageRules": [
+    {
+      "matchDepTypes": ["peerDependencies"],
+      "enabled": false
+    }
+  ]
 }
