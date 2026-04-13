@@ -1,5 +1,11 @@
 # @fehnomenal/headless-table-helpers
 
+## 6.0.2
+
+### Patch Changes
+
+- Relax column typings on the client _[`#51`](https://github.com/fehnomenal/headless-table-helpers/pull/51) [`fcff8ff`](https://github.com/fehnomenal/headless-table-helpers/commit/fcff8ff159577c3cc2e48c2780be1afc3045dd17) [@fehnomenal](https://github.com/fehnomenal)_
+
 ## 6.0.1
 
 ### Patch Changes
