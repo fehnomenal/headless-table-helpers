@@ -151,7 +151,7 @@ easily build an array of columns to display:
 ```ts
 import { createDataTableHelper } from '@fehnomenal/headless-table-helpers/column-helpers/svelte';
 
-const h = createDataTableHelper(dataTable);
+const h = createDataTableHelper<typeof dataTable.$rowType>();
 ```
 
 The helper has functions for easily create columns that access single values
