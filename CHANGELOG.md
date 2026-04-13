@@ -1,5 +1,11 @@
 # @fehnomenal/headless-table-helpers
 
+## 6.0.1
+
+### Patch Changes
+
+- Make the rows have an intial empty array and be marked as loading initially _[`#49`](https://github.com/fehnomenal/headless-table-helpers/pull/49) [`fae645a`](https://github.com/fehnomenal/headless-table-helpers/commit/fae645abc9faaa218386ed14ac4fae6194719982) [@fehnomenal](https://github.com/fehnomenal)_
+
 ## 6.0.0
 
 ### Major Changes
