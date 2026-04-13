@@ -9,18 +9,18 @@ export type DataTableMeta<Column extends string> =
   | DataTableOffsetPaginationMeta<Column>
   | DataTableCursorPaginationMeta<Column>;
 
-export type BaseDataTableMeta<Column extends string> = {
+export interface BaseDataTableMeta<Column extends string> {
   rowsPerPage: number;
   rowsPerPageOptions: number[];
   sortable: Column[];
-};
+}
 
 export const extractParamsFromInput = (input: Input): URLSearchParams =>
   input instanceof URLSearchParams
     ? input
     : input instanceof URL
-      ? (input.searchParams as URLSearchParams)
-      : (input.url.searchParams as URLSearchParams);
+      ? input.searchParams
+      : input.url.searchParams;
 
 export const getBaseDataTableMeta = <
   Column extends string,

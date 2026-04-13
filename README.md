@@ -111,41 +111,36 @@ from [`src/loader/result.ts`](./src/loader/result.ts).
 
 ### Initialize a data table instance
 
-Pass the `meta` object and the `loaderResult` object to the `clientDataTable`
-function. The third parameter `config` is optional.
+Pass the `meta` and `loaderResult` objects to the `ClientDataTableOffset` or
+`ClientDataTableCursor` class depending on your meta type. The third parameter
+`config` is optional. The arguments are passed in closures to be able to react to
+changes.
 
 ```ts
-import { clientDataTable } from '@fehnomenal/headless-table-helpers/client';
+import { ClientDataTableOffset } from '@fehnomenal/headless-table-helpers/client';
 
-// You can also import `clientDataTableCursor` or `clientDataTableOffset` to
-// benefit from better tree-shaking. The base function will delegate to these
-// depending on the type of `meta`.
-
-const dataTable = clientDataTable(meta, result, {
-  // You can pass additional data that is used to create pagination links.
-  additionalData: {
-    name: params.name,
-  },
-  // This callback function is called after the total pages could be determined.
-  onTotalPages({ totalPages, currentPage, currentPageSize, meta }) {
-    // For example redirect if the user navigated to a non-existing page via the address bar.
-    if (currentPage > totalPages) {
-      const url = new URL(window.location);
-      url.searchParams.delete(meta.paramNames.currentOffset);
-      window.location = url;
-    }
-  },
-});
+const dataTable = new ClientDataTableOffset(
+  () => meta,
+  () => result,
+  () => ({
+    // You can pass additional data that is used to create pagination links.
+    additionalData: {
+      name: params.name,
+    },
+    // This callback function is called after the total pages could be determined.
+    onTotalPages({ totalPages, currentPage, currentPageSize, meta }) {
+      // For example redirect if the user navigated to a non-existing page via the address bar.
+      if (currentPage > totalPages) {
+        const url = new URL(window.location);
+        url.searchParams.delete(meta.paramNames.currentOffset);
+        window.location = url;
+      }
+    },
+  }),
+);
 ```
 
-The returned object is a
-[readable Svelte store](https://svelte.dev/docs/svelte-store#readable) with a
-`update` method that can be used to update the internal properties. `update`
-accepts the same arguments as `dataTable`. Updating instead of creating a new
-object results in the table not seeming to be cleared during loading another
-page.
-
-The store provides all the properties you need to build the UI.
+The returned instance provides all the properties you need to build the UI.
 // TBD
 
 ### Column helpers
