@@ -12,13 +12,17 @@ export const createKyselyOffsetDataTableLoader = <DB, TB extends keyof DB & stri
   const totalRows = getTotalRows(baseQuery);
 
   return {
-    currentOffset: Promise.resolve(meta.currentOffset),
-    rows: getRows(meta, baseQuery, sortTable, executeQuery),
+    currentOffset: getCurrentOffsetFromOffsetMeta(meta),
+    rows: getRowsFromOffsetMeta(meta, baseQuery, sortTable, executeQuery),
     totalRows,
   };
 };
 
-const getRows = <DB, TB extends keyof DB & string, O>(
+export const getCurrentOffsetFromOffsetMeta = async <DB, TB extends keyof DB>(
+  meta: DataTableOffsetPaginationMeta<AnyColumn<DB, TB>>,
+) => meta.currentOffset;
+
+export const getRowsFromOffsetMeta = <DB, TB extends keyof DB & string, O>(
   meta: DataTableOffsetPaginationMeta<AnyColumn<DB, TB>>,
   query: SelectQueryBuilder<DB, TB, {}>,
   sortTable: TB,

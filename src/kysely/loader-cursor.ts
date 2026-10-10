@@ -14,14 +14,14 @@ export const createKyselyCursorDataTableLoader = <DB, TB extends keyof DB & stri
   const totalRows = getTotalRows(baseQuery);
 
   return {
-    currentOffset: getCurrentOffset(meta, baseQuery, sortTable),
-    rows: getRows(meta, baseQuery, sortTable, executeQuery),
+    currentOffset: getCurrentOffsetFromCursorMeta(meta, baseQuery, sortTable),
+    rows: getRowsFromCursorMeta(meta, baseQuery, sortTable, executeQuery),
     totalRows,
-    lastPageCursor: getLastPageCursor(meta, totalRows, baseQuery, sortTable).catch(() => null),
+    lastPageCursor: getLastPageCursorFromCursorMeta(meta, totalRows, baseQuery, sortTable).catch(() => null),
   };
 };
 
-const getCurrentOffset = async <DB, TB extends keyof DB>(
+export const getCurrentOffsetFromCursorMeta = async <DB, TB extends keyof DB>(
   meta: DataTableCursorPaginationMeta<AnyColumn<DB, TB>>,
   query: SelectQueryBuilder<DB, TB, Record<string, never>>,
   sortTable: TB & string,
@@ -56,7 +56,7 @@ const getCurrentOffset = async <DB, TB extends keyof DB>(
   assertNever(meta.direction);
 };
 
-const getRows = <DB, TB extends keyof DB & string, O>(
+export const getRowsFromCursorMeta = <DB, TB extends keyof DB & string, O>(
   meta: DataTableCursorPaginationMeta<AnyColumn<DB, TB>>,
   query: SelectQueryBuilder<DB, TB, {}>,
   sortTable: TB,
@@ -119,7 +119,7 @@ const filter =
     return qb;
   };
 
-const getLastPageCursor = async <DB, TB extends keyof DB & string>(
+export const getLastPageCursorFromCursorMeta = async <DB, TB extends keyof DB & string>(
   meta: DataTableCursorPaginationMeta<AnyColumn<DB, TB>>,
   totalRows: Promise<number>,
   query: SelectQueryBuilder<DB, TB, Record<string, never>>,
